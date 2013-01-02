@@ -99,7 +99,7 @@ def administration_contentdm_dips(request):
 
     ReplaceDirChoiceFormSet = administration_dips_formset()
 
-    valid_submission, formset = administration_dips_handle_updates(request, link_id, ReplaceDirChoiceFormSet)
+    valid_submission, formset, add_form = administration_dips_handle_updates(request, link_id, ReplaceDirChoiceFormSet)
 
     if request.method != 'POST' or valid_submission:
         formset = ReplaceDirChoiceFormSet(queryset=ReplaceDirChoices)
@@ -124,7 +124,7 @@ def administration_dips_formset():
     return modelformset_factory(
         models.MicroServiceChoiceReplacementDic,
         form=forms.MicroServiceChoiceReplacementDicForm,
-        extra=1,
+        extra=0,
         can_delete=True
     )
 
@@ -132,7 +132,26 @@ def administration_dips_handle_updates(request, link_id, ReplaceDirChoiceFormSet
     valid_submission = True
     formset = None
 
+    add_form = forms.MicroServiceChoiceReplacementDicForm()
+
     if request.method == 'POST':
+        # if any new configuration data has been submitted, attempt to add it
+        if request.POST.get('description', '') != '' or request.POST.get('replacementdic', '') != '':
+            postData = request.POST.copy()
+            postData['choiceavailableatlink'] = link_id
+
+            add_form = forms.MicroServiceChoiceReplacementDicForm(postData)
+
+            if add_form.is_valid():
+                choice = models.MicroServiceChoiceReplacementDic()
+                choice.choiceavailableatlink = link_id
+                choice.description           = request.POST.get('description', '')
+                choice.replacementdic        = request.POST.get('replacementdic', '')
+                choice.save()
+
+                # create new blank field
+                add_form = forms.MicroServiceChoiceReplacementDicForm()
+
         formset = ReplaceDirChoiceFormSet(request.POST)
 
         # take note of formset validity because if submission was successful
@@ -148,46 +167,88 @@ def administration_dips_handle_updates(request, link_id, ReplaceDirChoiceFormSet
             for instance in instances:
                 instance.choiceavailableatlink = link_id
                 instance.save()
-    return valid_submission, formset
+    return valid_submission, formset, add_form
+
+def administration_storage(request):
+    picker_js_file = 'storage_directory_picker.js'
+    system_directory_description = 'AIP storage'
+    return render(request, 'administration/sources.html', locals())
+
+def administration_storage_json(request):
+    return administration_system_directory_data_request_handler(
+      request,
+      models.StorageDirectory
+    )
 
 def administration_sources(request):
+    picker_js_file = 'source_directory_picker.js'
+    system_directory_description = 'Transfer source'
     return render(request, 'administration/sources.html', locals())
 
 def administration_sources_json(request):
+    return administration_system_directory_data_request_handler(
+      request,
+      models.SourceDirectory
+    )
+
+def administration_system_directory_data_request_handler(request, model):
     message = ''
     if request.method == 'POST':
          path = request.POST.get('path', '')
          if path != '':
-              try:
-                  models.SourceDirectory.objects.get(path=path)
-              except models.SourceDirectory.DoesNotExist:
-                  # save dir
-                  source_dir = models.SourceDirectory()
-                  source_dir.path = path
-                  source_dir.save()
-                  message = 'Directory added.'
-              else:
-                  message = 'Directory already added.'
+             try:
+                 model.objects.get(path=path)
+             except model.DoesNotExist:
+                 # save dir
+                 source_dir = model()
+                 source_dir.path = path
+                 source_dir.save()
+                 message = 'Directory added.'
+             else:
+                 message = 'Directory already added.'
          else:
-              message = 'Path is empty.'
+             message = 'Path is empty.'
+         if model == models.StorageDirectory:
+             administration_render_storage_directories_to_dicts()
 
     response = {}
     response['message'] = message
     response['directories'] = []
 
-    for directory in models.SourceDirectory.objects.all():
+    for directory in model.objects.all():
       response['directories'].append({
         'id':   directory.id,
         'path': directory.path
       })
-    return HttpResponse(simplejson.JSONEncoder().encode(response), mimetype='application/json')
+
+    return HttpResponse(
+      simplejson.JSONEncoder().encode(response),
+      mimetype='application/json'
+    )
+
+def administration_storage_delete_json(request, id):
+    response = administration_system_directory_delete_request_handler(
+      request,
+      models.StorageDirectory,
+      id
+    )
+    administration_render_storage_directories_to_dicts()
+    return response
 
 def administration_sources_delete_json(request, id):
-    models.SourceDirectory.objects.get(pk=id).delete()
+    return administration_system_directory_delete_request_handler(
+      request, 
+      models.SourceDirectory,
+      id
+    )
+
+def administration_system_directory_delete_request_handler(request, model, id):
+    model.objects.get(pk=id).delete()
+    if model == models.StorageDirectory:
+        administration_render_storage_directories_to_dicts()
     response = {}
     response['message'] = 'Deleted.'
     return HttpResponse(simplejson.JSONEncoder().encode(response), mimetype='application/json')
-    #return HttpResponseRedirect(reverse('components.administration.views.administration_sources'))
 
 def administration_processing(request):
     file_path = '/var/archivematica/sharedDirectory/sharedMicroServiceTasksConfigs/processingMCPConfigs/defaultProcessingMCP.xml'
@@ -201,3 +262,54 @@ def administration_processing(request):
         xml = file.read()
 
     return render(request, 'administration/processing.html', locals())
+
+def administration_render_storage_directories_to_dicts():
+    administration_flush_aip_storage_dicts()
+    storage_directories = models.StorageDirectory.objects.all()
+    link_pk = administration_get_aip_storage_link_pk()
+    for dir in storage_directories:
+        dict = models.MicroServiceChoiceReplacementDic()
+        dict.choiceavailableatlink = link_pk
+        if dir.path == '%sharedPath%www/AIPsStore/':
+            description = 'Store AIP in standard Archivematica Directory'
+        else:
+            description = dir.path
+        dict.description = description
+        dict.replacementdic = '{"%AIPsStore%":"' + dir.path + '/"}'
+        dict.save()
+
+def administration_flush_aip_storage_dicts():
+    link_pk = administration_get_aip_storage_link_pk()
+    entries = models.MicroServiceChoiceReplacementDic.objects.filter(
+      choiceavailableatlink=link_pk
+    )
+    for entry in entries:
+        entry.delete()
+
+def administration_get_aip_storage_link_pk():
+    tasks = models.TaskConfig.objects.filter(description='Store AIP location')
+    links = models.MicroServiceChainLink.objects.filter(currenttask=tasks[0].pk)
+    return links[0].pk
+
+def administration_premis_agent(request):
+    agent = models.Agent.objects.get(pk=2)
+    if request.POST:
+        submitted_organization = request.POST.get('organization', '')
+        submitted_name         = request.POST.get('name', '')
+
+        error = False
+        if submitted_name == '':
+            error = "PREMIS agent name can't be blank."
+        if submitted_organization == '':
+            error = "PREMIS agent organization can't be blank."
+
+        if not error:
+            agent.identifiervalue = submitted_organization
+            agent.name = submitted_name
+            agent.save()
+            message = 'Saved.'
+            message_type = 'success'
+        else:
+            message = error
+            message_type = 'error'
+    return render(request, 'administration/premis_agent.html', locals())

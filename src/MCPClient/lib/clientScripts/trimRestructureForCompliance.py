@@ -18,22 +18,19 @@
 # along with Archivematica.  If not, see <http://www.gnu.org/licenses/>.
 
 # @package Archivematica
-# @subpackage MCPServer
+# @subpackage archivematicaClientScript
 # @author Joseph Perry <joseph@artefactual.com>
+import re
+import os
+import sys
+from restructureForCompliance import restructureTRIMForComplianceFileUUIDsAssigned
 
-class unit:
-    def __init__(self, currentPath, UUID):
-        self.currentPath = currentPath.__str__()
-        self.UUID = UUID
+while False:
+    import time
+    time.sleep(10)
 
-    def getMagicLink(self):
-        return
-
-    def setMagicLink(self,link, exitStatus=""):
-        return
-
-    def setVariable(self, variable, variableValue, microServiceChainLink):
-        return
-    
-    def getmicroServiceChainLink(self, variable, variableValue, defaultMicroServiceChainLink):
-        return
+if __name__ == '__main__':
+    transferUUID = sys.argv[1]
+    transferName = sys.argv[2]
+    transferPath = sys.argv[3]
+    restructureTRIMForComplianceFileUUIDsAssigned(transferPath, transferUUID, "transferUUID")

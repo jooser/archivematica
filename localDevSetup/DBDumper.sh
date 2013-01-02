@@ -21,6 +21,8 @@
 # @author Joseph Perry <joseph@artefactual.com>>
 # @version svn: $Id$
 
+origDir="`pwd`"
+cd "`dirname $0`"
 databaseName="MCP"
 set -e
 echo -n "Enter the DATABASE root password (Hit enter if blank):"
@@ -38,16 +40,16 @@ dumpTables="--skip-triggers --skip-comments -d"
 dumpData="--skip-triggers --skip-comments --no-create-info --extended-insert=FALSE --complete-insert=TRUE --order-by-primary"
 # Quick load dump for testing
 #dumpData="--skip-triggers --skip-comments --no-create-info --extended-insert=TRUE"
-MCPDumpSQLLocation="../src/MCPServer/share/mysql2"
+MCPDumpSQLLocation="../src/MCPServer/share/mysql"
 
 #echo 'START TRANSACTION;' > $MCPDumpSQLLocation
 echo 'SET foreign_key_checks = 0;' > $MCPDumpSQLLocation
 #MCP
 #-- MCP dump tables --
-$mysqldump Accesses Agents MetadataAppliesToTypes Dublincore RightsStatement RightsStatementCopyright RightsStatementCopyrightNote RightsStatementCopyrightDocumentationIdentifier RightsStatementLicense RightsStatementLicenseDocumentationIdentifier RightsStatementLicenseNote ArchivematicaRightsStatement RightsStatementStatuteInformation RightsStatementStatuteInformationNote RightsStatementStatuteDocumentationIdentifier RightsStatementOtherRightsInformation RightsStatementOtherRightsDocumentationIdentifier RightsStatementOtherRightsNote RightsStatementRightsGranted RightsStatementRightsGrantedRestriction RightsStatementRightsGrantedNote RightsStatementLinkingAgentIdentifier Tasks AIPs Notifications Sounds TaskTypes TasksConfigs MicroServiceChainLinks Transfers SIPs Files FilesFits FilesIDs Events Derivations MicroServiceChainLinksExitCodes Jobs MicroServiceChains MicroServiceChainChoice MicroServiceChoiceReplacementDic WatchedDirectoriesExpectedTypes WatchedDirectories StandardTasksConfigs SourceDirectories TasksConfigsAssignMagicLink TasksConfigsStartLinkForEachFile UnitVariables TasksConfigsSetUnitVariable TasksConfigsUnitVariableLinkPull  $dumpTables >> $MCPDumpSQLLocation
+$mysqldump Accesses Agents MetadataAppliesToTypes Dublincore RightsStatement RightsStatementCopyright RightsStatementCopyrightNote RightsStatementCopyrightDocumentationIdentifier RightsStatementLicense RightsStatementLicenseDocumentationIdentifier RightsStatementLicenseNote ArchivematicaRightsStatement RightsStatementStatuteInformation RightsStatementStatuteInformationNote RightsStatementStatuteDocumentationIdentifier RightsStatementOtherRightsInformation RightsStatementOtherRightsDocumentationIdentifier RightsStatementOtherRightsNote RightsStatementRightsGranted RightsStatementRightsGrantedRestriction RightsStatementRightsGrantedNote RightsStatementLinkingAgentIdentifier Tasks AIPs Notifications Sounds TaskTypes TasksConfigs MicroServiceChainLinks Transfers SIPs Files FilesFits FilesIDs Events Derivations MicroServiceChainLinksExitCodes Jobs MicroServiceChains MicroServiceChainChoice MicroServiceChoiceReplacementDic WatchedDirectoriesExpectedTypes WatchedDirectories StandardTasksConfigs TasksConfigsAssignMagicLink TasksConfigsStartLinkForEachFile UnitVariables TasksConfigsSetUnitVariable TasksConfigsUnitVariableLinkPull  $dumpTables >> $MCPDumpSQLLocation
 
 #-- MCP dump data --
-$mysqldump Accesses Agents MetadataAppliesToTypes Sounds TaskTypes TasksConfigs MicroServiceChainLinks MicroServiceChainLinksExitCodes MicroServiceChains MicroServiceChainChoice MicroServiceChoiceReplacementDic WatchedDirectoriesExpectedTypes WatchedDirectories StandardTasksConfigs SourceDirectories TasksConfigsAssignMagicLink TasksConfigsStartLinkForEachFile  TasksConfigsSetUnitVariable TasksConfigsUnitVariableLinkPull $dumpData >> $MCPDumpSQLLocation
+$mysqldump Accesses Agents MetadataAppliesToTypes Sounds TaskTypes TasksConfigs MicroServiceChainLinks MicroServiceChainLinksExitCodes MicroServiceChains MicroServiceChainChoice MicroServiceChoiceReplacementDic WatchedDirectoriesExpectedTypes WatchedDirectories StandardTasksConfigs TasksConfigsAssignMagicLink TasksConfigsStartLinkForEachFile  TasksConfigsSetUnitVariable TasksConfigsUnitVariableLinkPull $dumpData >> $MCPDumpSQLLocation
 
 
 
@@ -67,7 +69,7 @@ $mysqldump ElasticsearchIndexBackup  $dumpTables >> $MCPDumpSQLLocation
 
 #Dashboard
 #-- Dashboard dump tables --
-$mysqldump auth_message auth_user auth_user_groups auth_user_user_permissions auth_group auth_group_permissions auth_permission django_content_type django_session $dumpTables >> $MCPDumpSQLLocation
+$mysqldump auth_message auth_user auth_user_groups auth_user_user_permissions auth_group auth_group_permissions auth_permission django_content_type django_session SourceDirectories $dumpTables >> $MCPDumpSQLLocation
 $mysqldump auth_message auth_user_groups auth_user_user_permissions auth_group auth_group_permissions auth_permission django_content_type $dumpData >> $MCPDumpSQLLocation
 
 
@@ -75,6 +77,7 @@ $mysqldump auth_message auth_user_groups auth_user_user_permissions auth_group a
 echo 'SET foreign_key_checks = 1;' >> $MCPDumpSQLLocation
 #echo 'COMMIT;' >> $MCPDumpSQLLocation
 
+sed -i -e 's/ AUTO_INCREMENT=[0-9]\+//' $MCPDumpSQLLocation
 
 #VIEWS
 #-- MCP-views --
@@ -86,3 +89,4 @@ echo 'SET foreign_key_checks = 1;' >> $MCPDumpSQLLocation
 #-- Dashboard dump Dashboard-views --
 ##$mysqldump developmentAide_choicesDisplayed $dumpTables >> $MCPDumpSQLLocation
 
+cd "$origDir"

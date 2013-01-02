@@ -1,5 +1,4 @@
 #!/usr/bin/python -OO
-
 # This file is part of Archivematica.
 #
 # Copyright 2010-2012 Artefactual Systems Inc. <http://artefactual.com>
@@ -18,22 +17,34 @@
 # along with Archivematica.  If not, see <http://www.gnu.org/licenses/>.
 
 # @package Archivematica
-# @subpackage MCPServer
 # @author Joseph Perry <joseph@artefactual.com>
 
-class unit:
-    def __init__(self, currentPath, UUID):
-        self.currentPath = currentPath.__str__()
-        self.UUID = UUID
+import sys
+import os
+import uuid
 
-    def getMagicLink(self):
+def addUUIDs(target):
+    replace = " = '';\n"
+    basename = os.path.basename(target)
+    index = basename.rfind(".")
+    if index == -1:
         return
-
-    def setMagicLink(self,link, exitStatus=""):
-        return
-
-    def setVariable(self, variable, variableValue, microServiceChainLink):
-        return
+    output = os.path.join(os.path.dirname(target), basename[:index] + "_UUIDs" + basename[index:])
+    f = open(target, 'r')
+    content = f.read()
+    index = content.find(replace)
+    while index != -1:
+        content = content.replace(replace, " = '%s';\n" % uuid.uuid4().__str__(), 1)
+        index = content.find(replace)
     
-    def getmicroServiceChainLink(self, variable, variableValue, defaultMicroServiceChainLink):
-        return
+    f2 = open(output, 'w')
+    f2.write(content)
+    
+    f.close()
+    f2.close()
+    
+    
+
+if __name__ == '__main__':
+	target = sys.argv[1]
+	addUUIDs(target)
