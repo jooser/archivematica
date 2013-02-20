@@ -27,7 +27,6 @@ username="demo"
 password="demo"
 
 echo "Removing existing units"
-sudo ./removeUnitsFromWatchedDirectories.py
 
 set -e
 echo -n "Enter the DATABASE root password (Hit enter if blank):"
@@ -53,8 +52,7 @@ mysql -u root "${dbpassword}" --execute="CREATE DATABASE ${databaseName} CHARACT
 
 echo "Creating and populating MCP tables"
 mysql -u root "${dbpassword}" --execute="USE ${databaseName}; SOURCE $currentDir/../src/MCPServer/share/mysql;"
-echo "Creating MCP Views"
-mysql -u root "${dbpassword}" --execute="USE ${databaseName}; SOURCE $currentDir/../src/MCPServer/share/mysql2Views;"
+
 
 #echo "Creating and populating Transcoder Tables"
 #mysql -u root "${dbpassword}" --execute="USE ${databaseName}; SOURCE $currentDir/../src/transcoder/share/mysql;"
