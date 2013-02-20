@@ -59,21 +59,8 @@ function package-update() {
           echo "Going to ${part} ..."
           cd localDevSetup/
           colour sudo apt-get update
-          colour sudo ./installDependsFromDebianFile.py ./../src/archivematicaCommon/debian/control
-          #colour sudo ./installDependsFromDebianFile.py ./../src/createDublinCore/debian/control
+          #colour sudo ./installDependsFromDebianFile.py ./../src/archivematicaCommon/debian/control
           colour sudo ./installDependsFromDebianFile.py ./../src/dashboard/debian/control
-          #./installDependsFromDebianFile.py ./../src/easy-extract/debian/control
-          colour sudo ./installDependsFromDebianFile.py ./../src/MCPClient/debian/control
-          colour sudo ./installDependsFromDebianFile.py ./../src/MCPrpcCLI/debian/control
-          colour sudo ./installDependsFromDebianFile.py ./../src/MCPServer/debian/control
-          colour #./installDependsFromDebianFile.py ./../src/metaPackage-forensic-tools/debian/control
-          colour #./installDependsFromDebianFile.py ./../src/metaPackage-shotgun/debian/control
-          colour sudo ./installDependsFromDebianFile.py ./../src/sanitizeNames/debian/control
-          colour sudo ./installDependsFromDebianFile.py ./../src/SIPCreationTools/debian/control
-          colour sudo ./installDependsFromDebianFile.py ./../src/transcoder/debian/control
-          colour sudo ./installDependsFromDebianFile.py ./../src/upload-qubit/debian/control
-          colour #./installDependsFromDebianFile.py ./../src/vm-includes/debian/control
-          colour sudo ./installDependsFromDebianFile.py ./../src/xubuntuGuiScriptsEditor/debian/control
           sudo apt-get install python-pip -y
           sudo pip install django==1.4.3
           cd ..
