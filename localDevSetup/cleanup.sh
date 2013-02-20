@@ -21,22 +21,9 @@
 # @author Joseph Perry <joseph@artefactual.com>
 # @version svn: $Id$
 
-if [ -e /usr/share/fits/xml/fits.xmlbackup ]; then
-    sudo rm /usr/share/fits/xml/fits.xml
-fi
-
 sudo rm -r /usr/lib/archivematica
 sudo rm -r /etc/archivematica
 sudo rm -r /usr/share/archivematica
-
-sudo rm /usr/bin/upload-qubit 
-sudo rm /usr/bin/transcoder
-sudo rm /usr/bin/archivematicaCreateMD5
-sudo rm /usr/bin/archivematicaRestructureForCompliance
-sudo rm /usr/bin/sanitizeNames
-
-sudo rm -r /usr/lib/sanitizeNames
-
 sudo rm -r /var/archivematica/
 
 sudo rm /etc/apache2/sites-enabled/000-default
