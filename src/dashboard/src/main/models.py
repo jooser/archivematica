@@ -199,6 +199,49 @@ class FPRFileID(models.Model):
     class Meta:
         db_table = u'FileIDs'
 
+
+class FPRFileIDsBySingleID(models.Model):
+    uuid = models.CharField(max_length=150, primary_key=True, db_column='pk')
+    fileID = models.CharField(max_length=150, db_column='fileID')
+    id = models.TextField(db_column='id')
+    tool = models.TextField(db_column='tool')
+    toolVersion = models.TextField(db_column='toolVersion')
+    replaces = models.CharField(null=True, max_length=50, db_column='replaces')
+    lastmodified = models.DateTimeField(db_column='lastModified')
+    class Meta:
+        db_table = u'FileIDsBySingleID'
+
+
+class FPRCommands(models.Model):
+    uuid = models.CharField(max_length=150, primary_key=True, db_column='pk')
+    commandType = models.CharField(max_length=150, db_column='commandType')
+    verificationCommand = models.CharField(null=True, max_length=150, db_column='verificationCommand')
+    eventDetailCommand = models.CharField(null=True, max_length=150, db_column='eventDetailCommand')
+    supportedBy = models.CharField(null=True, max_length=150, db_column='supportedBy')
+    command = models.TextField(db_column='command')
+    outputLocation = models.TextField(db_column='outputLocation')
+    description = models.TextField(db_column='description')
+    outputFileFormat = models.TextField(db_column='outputFileFormat')
+    replaces = models.CharField(null=True, max_length=50, db_column='replaces')
+    lastmodified = models.DateTimeField(db_column='lastModified')
+    class Meta:
+        db_table = u'Commands'
+
+
+class FPRCommandRelationships(models.Model):
+    uuid = models.CharField(max_length=150, primary_key=True, db_column='pk')
+    commandClassification = models.CharField(max_length=150, db_column='commandClassification')
+    command = models.CharField(max_length=150, db_column='command')
+    fileID = models.CharField(max_length=150, db_column='fileID')
+    # validpreservationformat = models.IntegerField(null=True, db_column='validPreservationFormat', default=0)
+    replaces = models.CharField(null=True, max_length=50, db_column='replaces')
+    lastmodified = models.DateTimeField(db_column='lastModified')
+
+    class Meta:
+        db_table = u'CommandRelationships'
+
+
+
 class Task(models.Model):
     taskuuid = models.CharField(max_length=50, primary_key=True, db_column='taskUUID')
     job = models.ForeignKey(Job, db_column='jobuuid', to_field = 'jobuuid')

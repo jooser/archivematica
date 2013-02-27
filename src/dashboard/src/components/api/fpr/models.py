@@ -24,7 +24,40 @@ from tastypie.resources import ModelResource, ALL, ALL_WITH_RELATIONS
 class FPRFileIDResource(ModelResource):
     class Meta:
         queryset = models.FPRFileID.objects.all()
-        resource_name = 'file_id'
+        resource_name = 'FPRFileIDs'
+        ordering = ['lastmodified']
+        filtering = {
+            "uuid": ALL,
+            "lastmodified": ALL
+        }
+
+class FPRFileIDsBySingleIDResource(ModelResource):
+    class Meta:
+        queryset = models.FPRFileIDsBySingleID.objects.all()
+        resource_name = 'FPRFileIDsBySingleID'
+        ordering = ['lastmodified']
+        filtering = {
+            "pk": ALL,
+            "lastmodified": ALL
+        }
+
+
+class FPRCommandsResource(ModelResource):
+    class Meta:
+        queryset = models.FPRCommands.objects.all()
+        resource_name = 'FPRCommands'
+        ordering = ['lastmodified']
+        filtering = {
+            "uuid": ALL,
+            "lastmodified": ALL
+        }
+
+
+
+class FPRCommandRelationshipsResource(ModelResource):
+    class Meta:
+        queryset = models.FPRCommandRelationships.objects.all()
+        resource_name = 'FPRCommandRelationships'
         ordering = ['lastmodified']
         filtering = {
             "uuid": ALL,

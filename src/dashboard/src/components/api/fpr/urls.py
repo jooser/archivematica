@@ -17,11 +17,18 @@
 
 from django.conf.urls.defaults import *
 from components.api.fpr.models import FPRFileIDResource
+from components.api.fpr.models import FPRFileIDsBySingleIDResource
+from components.api.fpr.models import FPRCommandsResource
+from components.api.fpr.models import FPRCommandRelationshipsResource
+
 from tastypie.api import Api
 
 # add version to FPR resources
 api = Api(api_name='v1')
 api.register(FPRFileIDResource())
+api.register(FPRFileIDsBySingleIDResource())
+api.register(FPRCommandsResource())
+api.register(FPRCommandRelationshipsResource())
 
 urlpatterns = patterns('components.archival_storage.views',
     (r'', include(api.urls)),
