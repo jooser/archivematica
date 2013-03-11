@@ -195,7 +195,7 @@ class FPRFileID(models.Model):
     fileidtype = models.CharField(null=True, max_length=50, db_column='fileIDType')
     replaces = models.CharField(null=True, max_length=50, db_column='replaces')
     lastmodified = models.DateTimeField(db_column='lastModified')
-
+    enabled = models.IntegerField(null=True, db_column='enabled', default=1)
     class Meta:
         db_table = u'FileIDs'
 
@@ -208,6 +208,7 @@ class FPRFileIDsBySingleID(models.Model):
     toolVersion = models.TextField(db_column='toolVersion')
     replaces = models.CharField(null=True, max_length=50, db_column='replaces')
     lastmodified = models.DateTimeField(db_column='lastModified')
+    enabled = models.IntegerField(null=True, db_column='enabled', default=1)
     class Meta:
         db_table = u'FileIDsBySingleID'
 
@@ -224,6 +225,7 @@ class FPRCommands(models.Model):
     outputFileFormat = models.TextField(db_column='outputFileFormat')
     replaces = models.CharField(null=True, max_length=50, db_column='replaces')
     lastmodified = models.DateTimeField(db_column='lastModified')
+    enabled = models.IntegerField(null=True, db_column='enabled', default=1)
     class Meta:
         db_table = u'Commands'
 
@@ -236,7 +238,7 @@ class FPRCommandRelationships(models.Model):
     # validpreservationformat = models.IntegerField(null=True, db_column='validPreservationFormat', default=0)
     replaces = models.CharField(null=True, max_length=50, db_column='replaces')
     lastmodified = models.DateTimeField(db_column='lastModified')
-
+    enabled = models.IntegerField(null=True, db_column='enabled', default=1)
     class Meta:
         db_table = u'CommandRelationships'
 
@@ -245,7 +247,7 @@ class FPRCommandTypes(models.Model):
     replaces = models.CharField(null=True, max_length=50, db_column='replaces')
     type = models.TextField(db_column='type')
     lastmodified = models.DateTimeField(db_column='lastModified')
-    
+    enabled = models.IntegerField(null=True, db_column='enabled', default=1)
     class Meta:
         db_table = u'CommandTypes'
 
@@ -254,7 +256,7 @@ class FPRCommandClassifications(models.Model):
     classification = models.TextField(null=True, db_column='classification')
     replaces = models.CharField(null=True, max_length=50, db_column='replaces')
     lastmodified = models.DateTimeField(db_column='lastModified')
-
+    enabled = models.IntegerField(null=True, db_column='enabled', default=1)
     class Meta:
         db_table = u'CommandClassifications'
 
@@ -263,7 +265,7 @@ class FPRCommandsSupportedBy(models.Model):
     description = models.TextField(null=True, db_column='description')
     replaces = models.CharField(null=True, max_length=50, db_column='replaces')
     lastmodified = models.DateTimeField(db_column='lastModified')
-
+    enabled = models.IntegerField(null=True, db_column='enabled', default=1)
     class Meta:
         db_table = u'CommandsSupportedBy'
 
@@ -272,7 +274,7 @@ class FPRFileIDTypes(models.Model):
     description = models.TextField(null=True, db_column='description')
     replaces = models.CharField(null=True, max_length=50, db_column='replaces')
     lastmodified = models.DateTimeField(db_column='lastModified')
-
+    enabled = models.IntegerField(null=True, db_column='enabled', default=1)
     class Meta:
         db_table = u'FileIDTypes'
 
@@ -281,7 +283,7 @@ class FPRGroups(models.Model):
     description = models.TextField(null=True, db_column='description')
     replaces = models.CharField(null=True, max_length=50, db_column='replaces')
     lastmodified = models.DateTimeField(db_column='lastModified')
-
+    enabled = models.IntegerField(null=True, db_column='enabled', default=1)
     class Meta:
         db_table = u''
 
@@ -291,7 +293,7 @@ class FPRFileIDGroupMembers(models.Model):
     groupID = models.CharField(max_length=150, db_column='groupID')
     replaces = models.CharField(null=True, max_length=50, db_column='replaces')
     lastmodified = models.DateTimeField(db_column='lastModified')
-
+    enabled = models.IntegerField(null=True, db_column='enabled', default=1)
     class Meta:
         db_table = u'FileIDGroupMembers'
 
@@ -301,7 +303,7 @@ class FPRSubGroups(models.Model):
     childGroupID = models.CharField(max_length=150, db_column='childGroupID')
     replaces = models.CharField(null=True, max_length=50, db_column='replaces')
     lastmodified = models.DateTimeField(db_column='lastModified')
-
+    enabled = models.IntegerField(null=True, db_column='enabled', default=1)
     class Meta:
         db_table = u'SubGroups'
 
@@ -311,7 +313,7 @@ class FPRDefaultCommandsForClassifications(models.Model):
     forClassification = models.CharField(max_length=150, db_column='forClassification')
     replaces = models.CharField(null=True, max_length=50, db_column='replaces')
     lastmodified = models.DateTimeField(db_column='lastModified')
-
+    enabled = models.IntegerField(null=True, db_column='enabled', default=1)
     class Meta:
         db_table = u'DefaultCommandsForClassifications'
 
