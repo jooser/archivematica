@@ -20,6 +20,14 @@ from components.api.fpr.models import FPRFileIDResource
 from components.api.fpr.models import FPRFileIDsBySingleIDResource
 from components.api.fpr.models import FPRCommandsResource
 from components.api.fpr.models import FPRCommandRelationshipsResource
+from components.api.fpr.models import FPRCommandTypesResource
+from components.api.fpr.models import FPRCommandClassificationsResource
+from components.api.fpr.models import FPRCommandsSupportedByResource
+from components.api.fpr.models import FPRFileIDTypesResource
+from components.api.fpr.models import FPRGroupsResource
+from components.api.fpr.models import FPRFileIDGroupMembersResource
+from components.api.fpr.models import FPRSubGroupsResource
+from components.api.fpr.models import FPRDefaultCommandsForClassificationsResource
 
 from tastypie.api import Api
 
@@ -29,6 +37,14 @@ api.register(FPRFileIDResource())
 api.register(FPRFileIDsBySingleIDResource())
 api.register(FPRCommandsResource())
 api.register(FPRCommandRelationshipsResource())
+api.register(FPRCommandTypesResource())
+api.register(FPRCommandClassificationsResource())
+api.register(FPRCommandsSupportedByResource())
+api.register(FPRFileIDTypesResource())
+api.register(FPRGroupsResource())
+api.register(FPRFileIDGroupMembersResource())
+api.register(FPRSubGroupsResource())
+api.register(FPRDefaultCommandsForClassificationsResource())
 
 urlpatterns = patterns('components.archival_storage.views',
     (r'', include(api.urls)),

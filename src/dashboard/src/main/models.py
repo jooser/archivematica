@@ -240,6 +240,81 @@ class FPRCommandRelationships(models.Model):
     class Meta:
         db_table = u'CommandRelationships'
 
+class FPRCommandTypes(models.Model):
+    uuid = models.CharField(max_length=150, primary_key=True, db_column='pk')
+    replaces = models.CharField(null=True, max_length=50, db_column='replaces')
+    type = models.TextField(db_column='type')
+    lastmodified = models.DateTimeField(db_column='lastModified')
+    
+    class Meta:
+        db_table = u'CommandTypes'
+
+class FPRCommandClassifications(models.Model):
+    uuid = models.CharField(max_length=150, primary_key=True, db_column='pk')
+    classification = models.TextField(null=True, db_column='classification')
+    replaces = models.CharField(null=True, max_length=50, db_column='replaces')
+    lastmodified = models.DateTimeField(db_column='lastModified')
+
+    class Meta:
+        db_table = u'CommandClassifications'
+
+class FPRCommandsSupportedBy(models.Model):
+    uuid = models.CharField(max_length=150, primary_key=True, db_column='pk')
+    description = models.TextField(null=True, db_column='description')
+    replaces = models.CharField(null=True, max_length=50, db_column='replaces')
+    lastmodified = models.DateTimeField(db_column='lastModified')
+
+    class Meta:
+        db_table = u'CommandsSupportedBy'
+
+class FPRFileIDTypes(models.Model):
+    uuid = models.CharField(max_length=150, primary_key=True, db_column='pk')
+    description = models.TextField(null=True, db_column='description')
+    replaces = models.CharField(null=True, max_length=50, db_column='replaces')
+    lastmodified = models.DateTimeField(db_column='lastModified')
+
+    class Meta:
+        db_table = u'FileIDTypes'
+
+class FPRGroups(models.Model):
+    uuid = models.CharField(max_length=150, primary_key=True, db_column='pk')
+    description = models.TextField(null=True, db_column='description')
+    replaces = models.CharField(null=True, max_length=50, db_column='replaces')
+    lastmodified = models.DateTimeField(db_column='lastModified')
+
+    class Meta:
+        db_table = u''
+
+class FPRFileIDGroupMembers(models.Model):
+    uuid = models.CharField(max_length=150, primary_key=True, db_column='pk')
+    fileID = models.CharField(max_length=150, db_column='fileID')
+    groupID = models.CharField(max_length=150, db_column='groupID')
+    replaces = models.CharField(null=True, max_length=50, db_column='replaces')
+    lastmodified = models.DateTimeField(db_column='lastModified')
+
+    class Meta:
+        db_table = u'FileIDGroupMembers'
+
+class FPRSubGroups(models.Model):
+    uuid = models.CharField(max_length=150, primary_key=True, db_column='pk')
+    parentGroupID = models.CharField(max_length=150, db_column='parentGroupID')
+    childGroupID = models.CharField(max_length=150, db_column='childGroupID')
+    replaces = models.CharField(null=True, max_length=50, db_column='replaces')
+    lastmodified = models.DateTimeField(db_column='lastModified')
+
+    class Meta:
+        db_table = u'SubGroups'
+
+class FPRDefaultCommandsForClassifications(models.Model):
+    uuid = models.CharField(max_length=150, primary_key=True, db_column='pk')
+    MicroserviceChainLink = models.CharField(max_length=150, db_column='MicroserviceChainLink') 
+    forClassification = models.CharField(max_length=150, db_column='forClassification')
+    replaces = models.CharField(null=True, max_length=50, db_column='replaces')
+    lastmodified = models.DateTimeField(db_column='lastModified')
+
+    class Meta:
+        db_table = u'DefaultCommandsForClassifications'
+
 
 
 class Task(models.Model):

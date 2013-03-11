@@ -63,3 +63,78 @@ class FPRCommandRelationshipsResource(ModelResource):
             "uuid": ALL,
             "lastmodified": ALL
         }
+
+class FPRCommandTypesResource(ModelResource):
+    class Meta:
+        queryset = models.FPRCommandRelationships.objects.all()
+        resource_name = 'FPRCommandTypes'
+        ordering = ['lastmodified']
+        filtering = {
+            "uuid": ALL,
+            "lastmodified": ALL
+        }
+class FPRCommandClassificationsResource(ModelResource):
+    class Meta:
+        queryset = models.FPRCommandRelationships.objects.all()
+        resource_name = 'FPRCommandClassifications'
+        ordering = ['lastmodified']
+        filtering = {
+            "uuid": ALL,
+            "lastmodified": ALL
+        }
+class FPRCommandsSupportedByResource(ModelResource):
+    class Meta:
+        queryset = models.FPRCommandRelationships.objects.all()
+        resource_name = 'FPRCommandsSupportedBy'
+        ordering = ['lastmodified']
+        filtering = {
+            "uuid": ALL,
+            "lastmodified": ALL
+        }
+class FPRFileIDTypesResource(ModelResource):
+    class Meta:
+        queryset = models.FPRCommandRelationships.objects.all()
+        resource_name = 'FPRFileIDTypes'
+        ordering = ['lastmodified']
+        filtering = {
+            "uuid": ALL,
+            "lastmodified": ALL
+        }
+class FPRGroupsResource(ModelResource):
+    class Meta:
+        queryset = models.FPRCommandRelationships.objects.all()
+        resource_name = 'FPRGroups'
+        ordering = ['lastmodified']
+        filtering = {
+            "uuid": ALL,
+            "lastmodified": ALL
+        }
+class FPRFileIDGroupMembersResource(ModelResource):
+    class Meta:
+        queryset = models.FPRCommandRelationships.objects.all()
+        resource_name = 'FPRFileIDGroupMembers'
+        ordering = ['lastmodified']
+        filtering = {
+            "uuid": ALL,
+            "lastmodified": ALL
+        }
+class FPRSubGroupsResource(ModelResource):
+    class Meta:
+        queryset = models.FPRCommandRelationships.objects.all()
+        resource_name = 'FPRSubGroups'
+        ordering = ['lastmodified']
+        filtering = {
+            "uuid": ALL,
+            "lastmodified": ALL
+        }
+class FPRDefaultCommandsForClassificationsResource(ModelResource):
+    class Meta:
+        queryset = models.FPRCommandRelationships.objects.all()
+        resource_name = 'FPRDefaultCommandsForClassifications'
+        ordering = ['lastmodified']
+        filtering = {
+            "uuid": ALL,
+            "lastmodified": ALL
+        }
+
+
