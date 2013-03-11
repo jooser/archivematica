@@ -35,6 +35,8 @@ def getFromRestAPI(url, params, verbose=False, auth=None):
     r = requests.get(url, params=params, auth=auth)
 
     if r.status_code != 200:
+        print >>sys.stderr, "got error status code:", r.status_code
+        print >>sys.stderr, "url:", url, "params:", params 
         raise
     if verbose:
         print r.headers['content-type']

@@ -67,7 +67,15 @@ if __name__ == '__main__':
         ("CommandRelationships", "http://fprserver/api/fpr/v1/FPRCommandRelationships/"),
         ("FileIDsBySingleID", "http://fprserver/api/fpr/v1/FPRFileIDsBySingleID/"),
         ("FileIDs", "http://fprserver/api/fpr/v1/FPRFileIDs/"),
-        ("Commands", "http://fprserver/api/fpr/v1/FPRCommands/")
+        ("Commands", "http://fprserver/api/fpr/v1/FPRCommands/"),
+        ("CommandTypes", "http://fprserver/api/fpr/v1/FPRCommandTypes/"),
+        ("CommandClassifications", "http://fprserver/api/fpr/v1/FPRCommandClassifications/"),
+        ("CommandsSupportedBy", "http://fprserver/api/fpr/v1/FPRCommandsSupportedBy/"),
+        ("FileIDTypes", "http://fprserver/api/fpr/v1/FPRFileIDTypes/"),
+        ("Groups", "http://fprserver/api/fpr/v1/FPRGroups/"),
+        ("FileIDGroupMembers", "http://fprserver/api/fpr/v1/FPRFileIDGroupMembers/"),
+        ("SubGroups", "http://fprserver/api/fpr/v1/FPRSubGroups/"),
+        ("DefaultCommandsForClassifications", "http://fprserver/api/fpr/v1/FPRDefaultCommandsForClassifications/")
     ]:
         table, url = x
         params = {"format":"json", "order_by":"lastmodified", "lastmodified__gte":maxLastUpdateAtStart, "limit":"0"}
