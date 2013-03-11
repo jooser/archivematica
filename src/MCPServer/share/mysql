@@ -4689,6 +4689,8 @@ DROP TABLE IF EXISTS `FileIDTypes`;
 CREATE TABLE `FileIDTypes` (
   `pk` varchar(50) NOT NULL,
   `description` longtext,
+  `replaces` varchar(50) DEFAULT NULL,
+  `lastModified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `enabled` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`pk`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
