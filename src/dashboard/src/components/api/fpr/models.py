@@ -66,7 +66,7 @@ class FPRCommandRelationshipsResource(ModelResource):
 
 class FPRCommandTypesResource(ModelResource):
     class Meta:
-        queryset = models.FPRCommandRelationships.objects.all()
+        queryset = models.FPRCommandTypes.objects.all()
         resource_name = 'FPRCommandTypes'
         ordering = ['lastmodified']
         filtering = {
@@ -75,7 +75,7 @@ class FPRCommandTypesResource(ModelResource):
         }
 class FPRCommandClassificationsResource(ModelResource):
     class Meta:
-        queryset = models.FPRCommandRelationships.objects.all()
+        queryset = models.FPRCommandClassifications.objects.all()
         resource_name = 'FPRCommandClassifications'
         ordering = ['lastmodified']
         filtering = {
@@ -84,7 +84,7 @@ class FPRCommandClassificationsResource(ModelResource):
         }
 class FPRCommandsSupportedByResource(ModelResource):
     class Meta:
-        queryset = models.FPRCommandRelationships.objects.all()
+        queryset = models.FPRCommandsSupportedBy.objects.all()
         resource_name = 'FPRCommandsSupportedBy'
         ordering = ['lastmodified']
         filtering = {
@@ -93,7 +93,7 @@ class FPRCommandsSupportedByResource(ModelResource):
         }
 class FPRFileIDTypesResource(ModelResource):
     class Meta:
-        queryset = models.FPRCommandRelationships.objects.all()
+        queryset = models.FPRFileIDTypes.objects.all()
         resource_name = 'FPRFileIDTypes'
         ordering = ['lastmodified']
         filtering = {
@@ -102,7 +102,7 @@ class FPRFileIDTypesResource(ModelResource):
         }
 class FPRGroupsResource(ModelResource):
     class Meta:
-        queryset = models.FPRCommandRelationships.objects.all()
+        queryset = models.FPRGroups.objects.all()
         resource_name = 'FPRGroups'
         ordering = ['lastmodified']
         filtering = {
@@ -111,7 +111,7 @@ class FPRGroupsResource(ModelResource):
         }
 class FPRFileIDGroupMembersResource(ModelResource):
     class Meta:
-        queryset = models.FPRCommandRelationships.objects.all()
+        queryset = models.FPRFileIDGroupMembers.objects.all()
         resource_name = 'FPRFileIDGroupMembers'
         ordering = ['lastmodified']
         filtering = {
@@ -120,7 +120,7 @@ class FPRFileIDGroupMembersResource(ModelResource):
         }
 class FPRSubGroupsResource(ModelResource):
     class Meta:
-        queryset = models.FPRCommandRelationships.objects.all()
+        queryset = models.FPRSubGroups.objects.all()
         resource_name = 'FPRSubGroups'
         ordering = ['lastmodified']
         filtering = {
@@ -129,7 +129,7 @@ class FPRSubGroupsResource(ModelResource):
         }
 class FPRDefaultCommandsForClassificationsResource(ModelResource):
     class Meta:
-        queryset = models.FPRCommandRelationships.objects.all()
+        queryset = models.FPRDefaultCommandsForClassifications.objects.all()
         resource_name = 'FPRDefaultCommandsForClassifications'
         ordering = ['lastmodified']
         filtering = {

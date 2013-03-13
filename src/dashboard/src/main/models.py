@@ -285,7 +285,7 @@ class FPRGroups(models.Model):
     lastmodified = models.DateTimeField(db_column='lastModified')
     enabled = models.IntegerField(null=True, db_column='enabled', default=1)
     class Meta:
-        db_table = u''
+        db_table = u'Groups'
 
 class FPRFileIDGroupMembers(models.Model):
     uuid = models.CharField(max_length=150, primary_key=True, db_column='pk')
