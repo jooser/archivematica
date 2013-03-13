@@ -40,18 +40,19 @@ def create(table, entry):
         if key == "lastmodified" and value > maxLastUpdate:
             maxLastUpdate = value
         #print type(value)
-        if isinstance(key, str):
-            sets.append("%s='%s'" % (key, value))
-        elif isinstance(key, unicode):
-            sets.append("%s='%s'" % (key, value))
-        elif isinstance(key, int):
-            sets.append("%s=%s" % (key, value))
-        elif value == None:
+        if value == None:
             sets.append("%s=NULL" % (key))
+        elif isinstance(value, int):
+            sets.append("%s=%s" % (key, value))
+        elif isinstance(value, unicode):
+            sets.append("%s='%s'" % (key, databaseInterface.MySQLdb.escape_string(value)))
+        elif isinstance(value, str):
+            sets.append("%s='%s'" % (key, databaseInterface.MySQLdb.escape_string(value)))
+            
     sets = ", ".join(sets)
     sql = """INSERT INTO %s SET %s;""" % (table, sets)
-    print sql
-    #databaseInterface.runSQL(sql)
+    #print sql
+    databaseInterface.runSQL(sql)
     
              
 
@@ -89,13 +90,15 @@ if __name__ == '__main__':
             if databaseInterface.queryAllSQL(sql):
                 #pass
                 continue
+            
+            #If updating a disabled entry, it will continue to be disabled.
+            if entry['replaces'] != None:
+                 sql = """SELECT enabled FROM %s WHERE pk = '%s';""" % (table, entry['uuid'])
+                 enabled=databaseInterface.queryAllSQL(sql)[0][0]
+                 if not enabled:
+                     entry['enabled'] = 0
             create(table, entry) 
             
-            #if replaces:
-            #    updatefk()
-            
-            #if removeReplacement:
-            #    todo()
                 
             
     #createLinks()

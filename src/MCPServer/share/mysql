@@ -4776,6 +4776,8 @@ CREATE TABLE `SubGroups` (
   `pk` int(11) NOT NULL AUTO_INCREMENT,
   `parentGroupID` varchar(50) DEFAULT NULL,
   `childGroupID` varchar(50) DEFAULT NULL,
+  `replaces` varchar(50) DEFAULT NULL,
+  `lastModified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `enabled` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`pk`),
   KEY `childGroupID` (`childGroupID`),
