@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Archivematica.  If not, see <http://www.gnu.org/licenses/>.
 
-import os, ConfigParser
+import os, ConfigParser, simplejson
 from django.http import HttpResponse, HttpResponseForbidden
 from tastypie.authentication import ApiKeyAuthentication
 from contrib.mcp.client import MCPClient
@@ -26,18 +26,23 @@ def approve_transfer(request):
     authorized = api_auth.is_authenticated(request)
     if authorized == True:
         message = ''
-        error   = ''
+        error   = None
 
         directory = request.GET.get('directory', '')
         error = approve_transfer_via_mcp(directory)
 
-        if error != '' and error != None:
-            message = error
-        else:
-            message = 'Transfer approved'
+        response = {}
 
-        # return status message
-        return HttpResponse(message)
+        if error != None:
+            response['message'] = error
+            response['error']   = True
+        else:
+            response['message'] = 'Approval successful.'
+
+        return HttpResponse(
+            simplejson.JSONEncoder().encode(response),
+            mimetype='application/json'
+        )
     else:
         return HttpResponseForbidden()
 
