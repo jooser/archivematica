@@ -21,6 +21,29 @@ from tastypie.authentication import ApiKeyAuthentication
 from contrib.mcp.client import MCPClient
 from main import models
 
+def unapproved_transfers(request):
+    if request.method == 'GET':
+        api_auth = ApiKeyAuthentication()
+        authorized = api_auth.is_authenticated(request)
+        if authorized == True:
+
+            # get list of unapproved transfers
+            # return list as JSON
+            response = {}
+
+            if error != None:
+                response['message'] = error
+                response['error']   = True
+            else:
+                response['message'] = 'Approval successful.'
+
+                return HttpResponse(
+                    simplejson.JSONEncoder().encode(response),
+                    mimetype='application/json'
+                )
+        else:
+            pass
+
 #
 # Example: curl --data \
 #   "username=mike&api_key=d3b0e878a47ceb4c77b931a55c7007cf8d541d47&directory=MyTransfer" \
