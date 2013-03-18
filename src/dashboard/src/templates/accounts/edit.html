@@ -24,6 +24,8 @@
 
         {% include "_form.html" %}
 
+        <p>API key: {{ api_key }}</p>
+
         <div class="actions">
           <button type="submit" class="btn primary">Save</button>
           <a class="btn" href="{% url main.views.home %}">Cancel</a>
