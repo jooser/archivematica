@@ -15,14 +15,14 @@
 # You should have received a copy of the GNU General Public License
 # along with Archivematica.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.http import Http404, HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from tastypie.authentication import ApiKeyAuthentication
 
 def approve_transfer(request):
     api_auth = ApiKeyAuthentication()
     authorized = api_auth.is_authenticated(request)
     if authorized == True:
+
         return HttpResponse('Success')
     else:
-        # change to raise forbidden
-        raise Http404
+        return HttpResponseForbidden()
