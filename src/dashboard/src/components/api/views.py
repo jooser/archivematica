@@ -16,35 +16,44 @@
 # along with Archivematica.  If not, see <http://www.gnu.org/licenses/>.
 
 import os, ConfigParser, simplejson
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import Http404, HttpResponse, HttpResponseForbidden
 from tastypie.authentication import ApiKeyAuthentication
 from contrib.mcp.client import MCPClient
 from main import models
 
+#
+# Example: curl --data \
+#   "username=mike&api_key=d3b0e878a47ceb4c77b931a55c7007cf8d541d47&directory=MyTransfer" \
+#   http://127.0.0.1/api/transfer/approve
+#
+#
 def approve_transfer(request):
-    api_auth = ApiKeyAuthentication()
-    authorized = api_auth.is_authenticated(request)
-    if authorized == True:
-        message = ''
-        error   = None
+    if request.method == 'POST':
+        api_auth = ApiKeyAuthentication()
+        authorized = api_auth.is_authenticated(request)
+        if authorized == True:
+            message = ''
+            error   = None
 
-        directory = request.GET.get('directory', '')
-        error = approve_transfer_via_mcp(directory)
+            directory = request.POST.get('directory', '')
+            error = approve_transfer_via_mcp(directory)
 
-        response = {}
+            response = {}
 
-        if error != None:
-            response['message'] = error
-            response['error']   = True
+            if error != None:
+                response['message'] = error
+                response['error']   = True
+            else:
+                response['message'] = 'Approval successful.'
+
+            return HttpResponse(
+                simplejson.JSONEncoder().encode(response),
+                mimetype='application/json'
+            )
         else:
-            response['message'] = 'Approval successful.'
-
-        return HttpResponse(
-            simplejson.JSONEncoder().encode(response),
-            mimetype='application/json'
-        )
+            return HttpResponseForbidden()
     else:
-        return HttpResponseForbidden()
+        raise Http404
 
 def get_server_config_value(field):
     clientConfigFilePath = '/etc/archivematica/MCPServer/serverConfig.conf'
