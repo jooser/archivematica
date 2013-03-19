@@ -28,9 +28,10 @@ import databaseInterface
 def removeLinks():
     sql = "SET foreign_key_checks = 0;"
     databaseInterface.runSQL(sql)
-    sql = """DELETE MicroServiceChainLinks, TasksConfigs
+    sql = """DELETE MicroServiceChainLinks, TasksConfigs, MicroServiceChainLinksExitCodes
 FROM TasksConfigs
 INNER JOIN MicroServiceChainLinks ON MicroServiceChainLinks.currentTask = TasksConfigs.pk
+INNER JOIN MicroServiceChainLinksExitCodes ON MicroServiceChainLinks.pk = MicroServiceChainLinksExitCodes.microServiceChainLink
 WHERE TasksConfigs.taskType = '5e70152a-9c5b-4c17-b823-c9298c546eeb' 
 AND MicroServiceChainLinks.pk NOT IN (SELECT MicroserviceChainLink FROM DefaultCommandsForClassifications); """
     databaseInterface.runSQL(sql)
