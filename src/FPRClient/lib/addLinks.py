@@ -24,7 +24,7 @@ import uuid
 import sys
 sys.path.append("/usr/lib/archivematica/archivematicaCommon")
 import databaseInterface
-databaseInterface.printSQL = True
+#databaseInterface.printSQL = True
 
 def addLinks():
     #Find all command relationships without links.

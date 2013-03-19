@@ -34,6 +34,8 @@ else
   dbpassword=""
 fi
 
+#remove FPR links for local processing
+../src/FPRClient/lib/removeLinks.py
 
 mysqldump="mysqldump -u root ${dbpassword} ${databaseName}"
 dumpTables="--skip-triggers --skip-comments -d"
@@ -79,6 +81,9 @@ echo 'SET foreign_key_checks = 1;' >> $MCPDumpSQLLocation
 #echo 'COMMIT;' >> $MCPDumpSQLLocation
 
 sed -i -e 's/ AUTO_INCREMENT=[0-9]\+//' $MCPDumpSQLLocation
+
+#re-add FPR links for local processing
+../src/FPRClient/lib/addLinks.py
 
 #VIEWS
 #-- MCP-views --

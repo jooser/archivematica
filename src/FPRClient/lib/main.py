@@ -20,6 +20,7 @@
 # @package Archivematica
 # @subpackage FPRClient
 # @author Joseph Perry <joseph@artefactual.com>
+from addLinks import addLinks
 from optparse import OptionParser
 from getFromRestAPI import getFromRestAPI
 import sys
@@ -103,5 +104,6 @@ if __name__ == '__main__':
             
     #createLinks()
     #update last modified time
+    addLinks()
     databaseInterface.runSQL("SET foreign_key_checks = 1;")
     print maxLastUpdate
