@@ -23,7 +23,7 @@ from main import models
 
 #
 # Example: http://127.0.0.1/api/transfer/unapproved?username=mike&api_key=<API key>
-*
+#
 def unapproved_transfers(request):
     if request.method == 'GET':
         api_auth = ApiKeyAuthentication()
