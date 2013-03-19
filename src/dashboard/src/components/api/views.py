@@ -21,34 +21,57 @@ from tastypie.authentication import ApiKeyAuthentication
 from contrib.mcp.client import MCPClient
 from main import models
 
+#
+# Example: http://127.0.0.1/api/transfer/unapproved?username=mike&api_key=<API key>
+*
 def unapproved_transfers(request):
     if request.method == 'GET':
         api_auth = ApiKeyAuthentication()
         authorized = api_auth.is_authenticated(request)
         if authorized == True:
+            message    = ''
+            error      = None
+            unapproved = []
+
+            jobs = models.Job.objects.filter(jobtype='Approve transfer', currentstep='Awaiting decision')
+
+            for job in jobs:
+                # remove standard transfer path from directory (and last character)
+                job_directory = job.directory.replace(
+                    get_modified_standard_transfer_path() + '/',
+                    '',
+                    1
+                )[:-1]
+
+                unapproved.append({
+                    'directory': job_directory
+                })
 
             # get list of unapproved transfers
             # return list as JSON
             response = {}
 
+            response['results'] = unapproved
+
             if error != None:
                 response['message'] = error
                 response['error']   = True
             else:
-                response['message'] = 'Approval successful.'
+                response['message'] = 'Fetched unapproved transfers successfully.'
 
                 return HttpResponse(
                     simplejson.JSONEncoder().encode(response),
                     mimetype='application/json'
                 )
         else:
-            pass
+            return HttpResponseForbidden()
+    else:
+        return Http404
 
 #
 # Example: curl --data \
-#   "username=mike&api_key=d3b0e878a47ceb4c77b931a55c7007cf8d541d47&directory=MyTransfer" \
+#   "username=mike&api_key=<API key>&directory=MyTransfer" \
 #   http://127.0.0.1/api/transfer/approve
-#
 #
 def approve_transfer(request):
     if request.method == 'POST':
@@ -59,7 +82,7 @@ def approve_transfer(request):
             error   = None
 
             directory = request.POST.get('directory', '')
-            error = approve_transfer_via_mcp(directory)
+            error     = approve_transfer_via_mcp(directory)
 
             response = {}
 
@@ -88,20 +111,22 @@ def get_server_config_value(field):
     except:
         return ''
 
+def get_modified_standard_transfer_path():
+    path = os.path.join(
+        get_server_config_value('watchDirectoryPath'),
+        'activeTransfers/standardTransfer'
+    )
+    shared_directory_path = get_server_config_value('sharedDirectory')
+    return path.replace(shared_directory_path, '%sharedPath%', 1)
+
 def approve_transfer_via_mcp(directory):
     error = None
 
     if (directory != ''):
         # assemble transfer path
-        transfer_path = os.path.join(
-            get_server_config_value('watchDirectoryPath'),
-            'activeTransfers/standardTransfer',
-            directory,
-        ) + '/'
-        shared_directory_path = get_server_config_value('sharedDirectory')
-        transfer_path = transfer_path.replace(shared_directory_path, '%sharedPath%', 1)
+        transfer_path = os.path.join(get_modified_standard_transfer_path(), directory) + '/'
 
-        # look up job UUID using transder path
+        # look up job UUID using transfer path
         try:
             job = models.Job.objects.filter(directory=transfer_path, currentstep='Awaiting decision')[0]
 
@@ -112,7 +137,7 @@ def approve_transfer_via_mcp(directory):
             result = client.execute(job.pk, 'Approve', 3)
 
         except:
-            error = 'Unabled to find unapproved transfer directory.'
+            error = 'Unable to find unapproved transfer directory.'
 
     else:
         error = 'Please specify a transfer directory.'

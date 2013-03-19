@@ -26,4 +26,5 @@ urlpatterns = patterns('components.api.views',
     #(r'', include(selectionAvailable.urls)),
     #(r'', include(selectionAPI.urls)),
     (r'transfer/approve', 'approve_transfer'), 
+    (r'transfer/unapproved', 'unapproved_transfers')
 )
