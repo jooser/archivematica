@@ -35,7 +35,7 @@ def run(target, fileUUID):
     if extensionIndex != -1:
         extension = basename[extensionIndex+1:] 
         print "extension:", extension
-        sql = """INSERT INTO FilesIdentifiedIDs (fileUUID, fileID) VALUES ('%s', (SELECT FileIDsBySingleID.fileID FROM FileIDsBySingleID JOIN FileIDs ON FileIDsBySingleID.fileID = FileIDs.pk WHERE FileIDs.fileIDType = '16ae42ff-1018-4815-aac8-cceacd8d88a8' AND FileIDsBySingleID.id = '%s'))""" % (escapeForDB(fileUUID), escapeForDB(extension.lower()))
+        sql = """INSERT INTO FilesIdentifiedIDs (fileUUID, fileID) VALUES ('%s', (SELECT FileIDsBySingleID.fileID FROM FileIDsBySingleID JOIN FileIDs ON FileIDsBySingleID.fileID = FileIDs.pk WHERE FileIDs.fileIDType = '16ae42ff-1018-4815-aac8-cceacd8d88a8' AND FileIDsBySingleID.id = '%s' AND FileIDs.enabled = TRUE AND FileIDsBySingleID.enabled = TRUE))""" % (escapeForDB(fileUUID), escapeForDB(extension.lower()))
         databaseInterface.runSQL(sql)
         
 if __name__ == '__main__':
