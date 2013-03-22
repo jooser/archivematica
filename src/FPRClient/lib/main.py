@@ -65,21 +65,23 @@ if __name__ == '__main__':
     maxLastUpdate = "2000-01-01T00:00:00"
     maxLastUpdateAtStart = maxLastUpdate
     databaseInterface.runSQL("SET foreign_key_checks = 0;")
+    server = "http://192.168.1.124:8000"
     for x in [
-        ("CommandRelationships", "http://fprserver/fpr/api/v1/CommandRelationships/"),
-        ("FileIDsBySingleID", "http://fprserver/fpr/api/v1/FileIDsBySingleID/"),
-        ("FileIDs", "http://fprserver/fpr/api/v1/FileIDs/"),
-        ("Commands", "http://fprserver/fpr/api/v1/Commands/"),
-        ("CommandTypes", "http://fprserver/fpr/api/v1/CommandTypes/"),
-        ("CommandClassifications", "http://fprserver/fpr/api/v1/CommandClassifications/"),
-        ("CommandsSupportedBy", "http://fprserver/fpr/api/v1/CommandsSupportedBy/"),
-        ("FileIDTypes", "http://fprserver/fpr/api/v1/FileIDTypes/"),
-        ("Groups", "http://fprserver/fpr/api/v1/Groups/"),
-        ("FileIDGroupMembers", "http://fprserver/fpr/api/v1/FileIDGroupMembers/"),
-        ("SubGroups", "http://fprserver/fpr/api/v1/SubGroups/"),
-        ("DefaultCommandsForClassifications", "http://fprserver/fpr/api/v1/DefaultCommandsForClassifications/")
+        ("CommandRelationships", server + "/fpr/api/v1/CommandRelationship/"),
+        ("FileIDsBySingleID", server + "/fpr/api/v1/FileIDsBySingleID/"),
+        ("FileIDs", server + "/fpr/api/v1/FileID/"),
+        ("Commands", server + "/fpr/api/v1/Command/"),
+        ("CommandTypes", server + "/fpr/api/v1/CommandType/"),
+        ("CommandClassifications", server + "/fpr/api/v1/CommandClassification/"),
+        ("CommandsSupportedBy", server + "/fpr/api/v1/CommandsSupportedBy/"),
+        ("FileIDTypes", server + "/fpr/api/v1/FileIDType/"),
+        ("Groups", server + "/fpr/api/v1/Group/"),
+        ("FileIDGroupMembers", server + "/fpr/api/v1/FileIDGroupMember/"),
+        ("SubGroups", server + "/fpr/api/v1/SubGroup/"),
+        ("DefaultCommandsForClassifications", server + "/fpr/api/v1/DefaultCommandsForClassification/")
     ]:
         table, url = x
+        #params = {"format":"json", "order_by":"lastmodified", "lastmodified__gte":maxLastUpdateAtStart, "limit":"0"}
         params = {"format":"json", "order_by":"lastmodified", "lastmodified__gte":maxLastUpdateAtStart, "limit":"0"}
         entries = getFromRestAPI(url, params, verbose=False, auth=None)
         #print "test", entries
@@ -92,6 +94,12 @@ if __name__ == '__main__':
                 #pass
                 continue
             
+            if not 'replaces' in entry:
+                print >>sys.stderr, "Required entry 'replaces' missing."
+                print entry
+                #continue
+                exit(3)
+                
             #If updating a disabled entry, it will continue to be disabled.
             if entry['replaces'] != None:
                  sql = """SELECT enabled FROM %s WHERE pk = '%s';""" % (table, entry['replaces'])

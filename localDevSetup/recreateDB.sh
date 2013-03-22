@@ -63,9 +63,6 @@ echo "Creating ${username} user"
 mysql -u root "${dbpassword}" --execute="CREATE USER '${username}'@'localhost' IDENTIFIED BY '${password}';"
 mysql -u root "${dbpassword}" --execute="GRANT SELECT, UPDATE, INSERT, DELETE ON ${databaseName}.* TO '${username}'@'localhost';"
 
-echo "Pulling FPR Data"
-echo "TODO CALL FPRCLIENT MAIL"
-
 dbpassword=""
 
 #set +o verbose #echo off
