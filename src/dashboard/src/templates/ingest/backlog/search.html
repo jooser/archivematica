@@ -7,7 +7,7 @@
 
 {% block js %}
   <script type="text/javascript" src="{{ STATIC_URL }}js/archival_storage/advanced-search-query-creator.js"></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}js/archival_storage/archival_storage_search.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/ingest/backlog.js"></script>
 {% endblock %}
 
 {% block css %}
@@ -21,10 +21,10 @@
     {% breadcrumb 'Search' %}
   </ul>
 
-  {% include "archival_storage/_archival_storage_search_form.html" %}
+  {% include "ingest/backlog/_search_form.html" %}
 
   {% if results %}
-    {% include "archival_storage/_archival_storage_search_summary.html" %}
+    {% include "ingest/backlog/_search_summary" %}
 
     <div style='width: 80px; float: left; padding: 10px; margin-right: 10px; background-color: #eee;'>
     {% for term_usage in file_extension_usage %}
@@ -36,7 +36,7 @@
 
     <div class='aip-search-item'>
       <div class='aip-search-item-file-column-header'>File(s)</div>
-      <div class='aip-search-item-aip-column-header'>AIP(s)</div>
+      <div class='aip-search-item-aip-column-header'>Transfer(s)</div>
     </div>
     <br clear='all' />
     {% for item in results %}
@@ -56,7 +56,7 @@
     </div>
 
     <div style='clear: both'>
-    {% include "archival_storage/_archival_storage_search_summary.html" %}
+    {% include "ingest/backlog/_search_summary" %}
     </div>
 
   {% else %}
