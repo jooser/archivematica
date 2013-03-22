@@ -28,7 +28,7 @@ $(document).ready(function() {
   // default field name field
   search.addSelect('field', {title: 'field name'}, {
     ''             : 'Any',
-    'filePath'     : 'File path',
+    'filename'     : 'File name',
     'fileExtension': 'File extension',
     'sipuuid'      : 'SIP UUID'
   });
