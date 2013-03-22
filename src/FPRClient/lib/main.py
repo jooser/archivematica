@@ -66,18 +66,18 @@ if __name__ == '__main__':
     maxLastUpdateAtStart = maxLastUpdate
     databaseInterface.runSQL("SET foreign_key_checks = 0;")
     for x in [
-        ("CommandRelationships", "http://fprserver/api/fpr/v1/FPRCommandRelationships/"),
-        ("FileIDsBySingleID", "http://fprserver/api/fpr/v1/FPRFileIDsBySingleID/"),
-        ("FileIDs", "http://fprserver/api/fpr/v1/FPRFileIDs/"),
-        ("Commands", "http://fprserver/api/fpr/v1/FPRCommands/"),
-        ("CommandTypes", "http://fprserver/api/fpr/v1/FPRCommandTypes/"),
-        ("CommandClassifications", "http://fprserver/api/fpr/v1/FPRCommandClassifications/"),
-        ("CommandsSupportedBy", "http://fprserver/api/fpr/v1/FPRCommandsSupportedBy/"),
-        ("FileIDTypes", "http://fprserver/api/fpr/v1/FPRFileIDTypes/"),
-        ("Groups", "http://fprserver/api/fpr/v1/FPRGroups/"),
-        ("FileIDGroupMembers", "http://fprserver/api/fpr/v1/FPRFileIDGroupMembers/"),
-        ("SubGroups", "http://fprserver/api/fpr/v1/FPRSubGroups/"),
-        ("DefaultCommandsForClassifications", "http://fprserver/api/fpr/v1/FPRDefaultCommandsForClassifications/")
+        ("CommandRelationships", "http://fprserver/fpr/api/v1/CommandRelationships/"),
+        ("FileIDsBySingleID", "http://fprserver/fpr/api/v1/FileIDsBySingleID/"),
+        ("FileIDs", "http://fprserver/fpr/api/v1/FileIDs/"),
+        ("Commands", "http://fprserver/fpr/api/v1/Commands/"),
+        ("CommandTypes", "http://fprserver/fpr/api/v1/CommandTypes/"),
+        ("CommandClassifications", "http://fprserver/fpr/api/v1/CommandClassifications/"),
+        ("CommandsSupportedBy", "http://fprserver/fpr/api/v1/CommandsSupportedBy/"),
+        ("FileIDTypes", "http://fprserver/fpr/api/v1/FileIDTypes/"),
+        ("Groups", "http://fprserver/fpr/api/v1/Groups/"),
+        ("FileIDGroupMembers", "http://fprserver/fpr/api/v1/FileIDGroupMembers/"),
+        ("SubGroups", "http://fprserver/fpr/api/v1/SubGroups/"),
+        ("DefaultCommandsForClassifications", "http://fprserver/fpr/api/v1/DefaultCommandsForClassifications/")
     ]:
         table, url = x
         params = {"format":"json", "order_by":"lastmodified", "lastmodified__gte":maxLastUpdateAtStart, "limit":"0"}
@@ -94,10 +94,13 @@ if __name__ == '__main__':
             
             #If updating a disabled entry, it will continue to be disabled.
             if entry['replaces'] != None:
-                 sql = """SELECT enabled FROM %s WHERE pk = '%s';""" % (table, entry['uuid'])
+                 sql = """SELECT enabled FROM %s WHERE pk = '%s';""" % (table, entry['replaces'])
                  enabled=databaseInterface.queryAllSQL(sql)[0][0]
                  if not enabled:
                      entry['enabled'] = 0
+                 sql = """UPDATE %s SET enabled=FALSE WHERE pk = '%s';""" % (table, entry['replaces'])
+                 databaseInterface.runSQL(sql)
+                 
             create(table, entry) 
             
                 
