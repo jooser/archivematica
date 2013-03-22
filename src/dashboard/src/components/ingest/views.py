@@ -35,6 +35,13 @@ import calendar
 import cPickle
 import components.decorators as decorators
 from components import helpers
+from components import advanced_search
+import os, sys
+sys.path.append("/usr/lib/archivematica/archivematicaCommon")
+import elasticSearchFunctions
+sys.path.append("/usr/lib/archivematica/archivematicaCommon/externals")
+import pyes
+from components.archival_storage.forms import StorageSearchForm
 
 """ @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
       Ingest
@@ -264,36 +271,6 @@ def ingest_browse_aip(request, jobuuid):
 
     return render(request, 'ingest/aip_browse.html', locals())
 
-
-"""
-from django.shortcuts import render
-from django.http import HttpResponse
-from django.utils import simplejson
-from components.archival_storage import forms
-from django.conf import settings
-from main import models
-from components.filesystem_ajax.views import send_file
-from components import advanced_search
-from components import helpers
-import os
-import sys
-sys.path.append("/usr/lib/archivematica/archivematicaCommon")
-import elasticSearchFunctions
-sys.path.append("/usr/lib/archivematica/archivematicaCommon/externals")
-import pyes
-import httplib
-import tempfile
-import subprocess
-"""
-
-from components import advanced_search
-import os, sys
-sys.path.append("/usr/lib/archivematica/archivematicaCommon")
-import elasticSearchFunctions
-sys.path.append("/usr/lib/archivematica/archivematicaCommon/externals")
-import pyes
-from components.archival_storage.forms import StorageSearchForm
-
 def transfer_backlog(request):
     queries, ops, fields, types = advanced_search.search_parameter_prep(request)
 
@@ -321,7 +298,7 @@ def transfer_backlog(request):
 
     file_extension_usage = results['facets']['fileExtension']['terms']
     number_of_results = results.hits.total
-    results = archival_storage_search_augment_results(results)
+    results = transfer_backlog_augment_search_results(results)
 
     end, previous_page, next_page = advanced_search.paging_related_values_for_template_use(
        items_per_page,
@@ -340,27 +317,13 @@ def transfer_backlog(request):
     form = StorageSearchForm(initial={'query': queries[0]})
     return render(request, 'ingest/backlog/search.html', locals())
 
-def archival_storage_search_augment_results(raw_results):
+def transfer_backlog_augment_search_results(raw_results):
     modifiedResults = []
 
     for item in raw_results.hits.hits:
         clone = item._source.copy()
 
-        # try to find AIP details in database
-        try:
-            # get AIP data from ElasticSearch
-            aip = elasticSearchFunctions.connect_and_get_aip_data(clone['AIPUUID'])
-
-            # augment result data
-            clone['sipname'] = aip.name
-            clone['fileuuid'] = clone['FILEUUID']
-            clone['href'] = aip.filePath.replace(AIPSTOREPATH + '/', "AIPsStore/")
-
-        except:
-            aip = None
-            clone['sipname'] = False
-
-        clone['filename'] = 'goat' #os.path.basename(clone['filePath'])
+        #clone['filename'] = clone['basename']
         clone['document_id'] = item['_id']
         clone['document_id_no_hyphens'] = item['_id'].replace('-', '____')
 
