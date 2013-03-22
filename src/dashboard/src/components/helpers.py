@@ -18,7 +18,10 @@
 from django.utils.dateformat import format
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from main import models
-import cPickle
+import cPickle, pprint
+
+def pr(object):
+    return pprint.pformat(object)
 
 # Used for raw SQL queries to return data in dictionaries instead of lists
 def dictfetchall(cursor):
