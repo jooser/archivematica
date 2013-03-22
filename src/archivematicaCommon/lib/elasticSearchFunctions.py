@@ -87,6 +87,7 @@ def connect_and_index_files(index, type, uuid, pathToArchive, sipName=None):
             # use METS file if indexing an AIP
             metsFilePath = os.path.join(pathToArchive, 'METS.' + uuid + '.xml')
 
+            # index AIP
             if os.path.isfile(metsFilePath):
                 filesIndexed = index_mets_file_metadata(
                     conn,
@@ -97,8 +98,9 @@ def connect_and_index_files(index, type, uuid, pathToArchive, sipName=None):
                     sipName
                 )
 
+            # index transfer
             else:
-                filesIndexed = index_directory_files(
+                filesIndexed = index_transfer_files(
                     conn,
                     uuid,
                     pathToArchive,
@@ -232,28 +234,27 @@ def normalize_list_dict_elements(list):
             list[index] =  normalize_dict_values(value)
     return list
 
-def index_directory_files(conn, uuid, pathToTransfer, index, type):
+def index_transfer_files(conn, uuid, pathToTransfer, index, type):
     filesIndexed = 0
+    create_time  = time.time()
 
-    # document structure
-    transferData = {
-      'uuid': uuid,
-      'created': time.time()
-    }
-
-    # compile file data (relative filepath, extension, size)
-    fileData = {}
     for filepath in list_files_in_dir(pathToTransfer):
         if os.path.isfile(filepath):
-            fileData[filepath] = {
-              'basename': os.path.basename(filepath)
+
+            indexData = {
+              'filepath'     : filepath,
+              'filename'     : os.path.basename(filepath),
+              'sipuuid'      : uuid,
+              'created'      : create_time
             }
+
+            fileName, fileExtension = os.path.splitext(filepath)
+            if fileExtension != '':
+                indexData['fileExtension']  = fileExtension[1:].lower()
+
+            conn.index(indexData, index, type)
+
             filesIndexed = filesIndexed + 1
-
-    transferData['filepaths'] = fileData
-
-    # add document to index
-    conn.index(transferData, index, type)
 
     return filesIndexed
 

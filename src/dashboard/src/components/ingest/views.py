@@ -289,7 +289,7 @@ def transfer_backlog(request):
         results = conn.search_raw(
             query=advanced_search.assemble_query(queries, ops, fields, types),
             indices='transfers',
-            type='transfer',
+            type='transferfile',
             start=start - 1,
             size=items_per_page
         )
