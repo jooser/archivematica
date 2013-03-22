@@ -236,6 +236,7 @@ def normalize_list_dict_elements(list):
 
 def index_transfer_files(conn, uuid, pathToTransfer, index, type):
     filesIndexed = 0
+    ingest_date  = str(datetime.datetime.today())[0:10]
     create_time  = time.time()
 
     for filepath in list_files_in_dir(pathToTransfer):
@@ -245,6 +246,7 @@ def index_transfer_files(conn, uuid, pathToTransfer, index, type):
               'filepath'     : filepath,
               'filename'     : os.path.basename(filepath),
               'sipuuid'      : uuid,
+              'ingestdate'   : ingest_date,
               'created'      : create_time
             }
 
