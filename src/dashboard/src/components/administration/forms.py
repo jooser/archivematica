@@ -18,7 +18,7 @@
 from django import forms
 from django.forms import ModelForm
 from django.forms.models import modelformset_factory
-from django.forms.widgets import TextInput, Textarea
+from django.forms.widgets import TextInput, Textarea, RadioSelect
 from main import models
 from django.conf import settings
 
@@ -32,3 +32,15 @@ class AgentForm(ModelForm):
     class Meta:
         model = models.Agent
         exclude = ('identifiertype')
+
+EAD_SHOW_CHOICES = ( 'embed', 'new', 'none', 'other', 'replace')
+
+EAD_ACTUATE_CHOICES = ( 'none', 'onLoad','other', 'onRequest')
+
+PREMIS_CHOICES = ( 'yes', 'no', 'base on PREMIS')
+
+class ATkForm(forms.Form):
+    premis = forms.ChoiceField(widget=forms.RadioSelect, choices=PREMIS_CHOICES)
+    actuate = forms.ChoiceField(widget=forms.RadioSelect, choices=EAD_ACTUATE_CHOICES)
+    show = forms.ChoiceField(widget=forms.RadioSelect, choices=EAD_SHOW_CHOICES)
+     
