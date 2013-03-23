@@ -32,6 +32,7 @@ from django.contrib.auth.decorators import user_passes_test
 import urllib
 from components.administration.forms import AdministrationForm
 from components.administration.forms import AgentForm
+from components.administration.forms import ATkForm
 import components.decorators as decorators
 
 """ @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -68,6 +69,11 @@ def administration_atom_dips(request):
 
     return render(request, 'administration/dips_edit.html', locals())
 
+def administration_atk_dips(request):
+    
+    form = ATkForm()
+    return render(request, 'administration/dips_atk_edit.html', {'form': form})
+
 def administration_contentdm_dips(request):
     link_id = administration_contentdm_dip_destination_select_link_id()
     ReplaceDirChoices = models.MicroServiceChoiceReplacementDic.objects.filter(choiceavailableatlink=link_id)
@@ -80,6 +86,14 @@ def administration_contentdm_dips(request):
         formset = ReplaceDirChoiceFormSet(queryset=ReplaceDirChoices)
 
     return render(request, 'administration/dips_contentdm_edit.html', locals())
+
+#TODO refactor the following 3 functions into 1
+def administration_atk_dip_destination_select_link_id():
+    taskconfigs = models.TaskConfig.objects.filter(description='Select target CONTENTdm server')
+    taskconfig = taskconfigs[0]
+    links = models.MicroServiceChainLink.objects.filter(currenttask=taskconfig.id)
+    link = links[0]
+    return link.id
 
 def administration_atom_dip_destination_select_link_id():
     taskconfigs = models.TaskConfig.objects.filter(description='Select DIP upload destination')
