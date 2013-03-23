@@ -20,6 +20,7 @@
 # @package Archivematica
 # @subpackage FPRClient
 # @author Joseph Perry <joseph@artefactual.com>
+import uuid
 from addLinks import addLinks
 from optparse import OptionParser
 from getFromRestAPI import getFromRestAPI
@@ -57,12 +58,31 @@ def create(table, entry):
     
              
 
+def getMaxLastUpdate():
+    sql = """SELECT variableValue FROM UnitVariables WHERE unitType = 'FPR' AND unitUUID = 'Client' AND variable = 'maxLastUpdate' """
+    rows = databaseInterface.queryAllSQL(sql)
+    if rows:
+        maxLastUpdate = rows[0][0]
+    else:
+        maxLastUpdate = "2000-01-01T00:00:00"
+    return maxLastUpdate
 
+def setMaxLastUpdate(maxLastUpdate):
+    sql = """SELECT pk FROM UnitVariables WHERE unitType = 'FPR' AND unitUUID = 'Client' AND variable = 'maxLastUpdate'; """
+    rows = databaseInterface.queryAllSQL(sql)
+    if rows:
+        sql = """UPDATE UnitVariables SET variableValue='%s' WHERE unitType = 'FPR' AND unitUUID = 'Client' AND variable = 'maxLastUpdate';""" % (maxLastUpdate)
+        databaseInterface.runSQL(sql)
+    else:
+        pk = uuid.uuid4().__str__()
+        sql = """INSERT INTO UnitVariables SET pk='%s', variableValue='%s', unitType='FPR', unitUUID = 'Client', variable = 'maxLastUpdate';""" % (pk, maxLastUpdate)
+        databaseInterface.runSQL(sql)
+    return maxLastUpdate
 
 
 if __name__ == '__main__':
     global maxLastUpdate
-    maxLastUpdate = "2000-01-01T00:00:00"
+    maxLastUpdate = getMaxLastUpdate()
     maxLastUpdateAtStart = maxLastUpdate
     databaseInterface.runSQL("SET foreign_key_checks = 0;")
     server = "http://192.168.1.124:8000"
@@ -111,10 +131,9 @@ if __name__ == '__main__':
                  
             create(table, entry) 
             
-                
-            
     #createLinks()
-    #update last modified time
     addLinks()
     databaseInterface.runSQL("SET foreign_key_checks = 1;")
+    if maxLastUpdate != maxLastUpdateAtStart:
+        setMaxLastUpdate(maxLastUpdate)
     print maxLastUpdate
