@@ -5,6 +5,7 @@
 {% for field in form.hidden_fields %}
   {{ field }}
 {% endfor %}
+<h2>nothing</h2>
 
 {% for field in form.visible_fields %}
   <div class="clearfix{% if field.errors %} error{% endif %}">
@@ -17,7 +18,7 @@
         </li>
       </ul>
     {% else %}
-      {{ field.label_tag }}
+      {{ field.label_tag }} 
       <div class="input">
         {{ field }}
         {% if field.help_text %}

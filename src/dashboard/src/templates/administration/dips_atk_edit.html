@@ -28,7 +28,12 @@
 
     <h3>Archivists Toolkit DIP upload</h3>
 
-	{% include "_form.html" with form=form %}
+	{% for radio in form.visible_fields %}
+        <div class="radio"> {{ radio.label }}
+            {{ radio }}	
+	</div><br>
+	{% endfor %}
+
 	
   </form>
 

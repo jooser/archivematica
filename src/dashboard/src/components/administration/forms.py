@@ -33,14 +33,18 @@ class AgentForm(ModelForm):
         model = models.Agent
         exclude = ('identifiertype')
 
-EAD_SHOW_CHOICES = ( 'embed', 'new', 'none', 'other', 'replace')
-
-EAD_ACTUATE_CHOICES = ( 'none', 'onLoad','other', 'onRequest')
-
-PREMIS_CHOICES = ( 'yes', 'no', 'base on PREMIS')
+EAD_SHOW_CHOICES = [['embed', 'embed'], ['new','new'], ['none','none'], ['other','other'], ['replace', 'replace']]
+EAD_ACTUATE_CHOICES = [['none', 'none'], ['onLoad','onLoad'],['other','other'], ['onRequest', 'onRequest']]
+PREMIS_CHOICES = [[ 'yes', 'yes'], ['no', 'no'], ['premis', 'base on PREMIS']]
 
 class ATkForm(forms.Form):
-    premis = forms.ChoiceField(widget=forms.RadioSelect, choices=PREMIS_CHOICES)
-    actuate = forms.ChoiceField(widget=forms.RadioSelect, choices=EAD_ACTUATE_CHOICES)
-    show = forms.ChoiceField(widget=forms.RadioSelect, choices=EAD_SHOW_CHOICES)
+    premis = forms.ChoiceField(widget=RadioSelect(), label="Restrictions Apply:", choices=PREMIS_CHOICES)
+    actuate = forms.ChoiceField(widget=RadioSelect(), label="EAD Actuate:", choices=EAD_ACTUATE_CHOICES)
+    show = forms.ChoiceField(widget=RadioSelect(), label="EAD Show:", choices=EAD_SHOW_CHOICES)
+    usestatement = forms.CharField(widget=TextInput(attrs=settings.INPUT_ATTRS), label="Use statement:")
+    objecttype = forms.CharField(widget=TextInput(attrs=settings.INPUT_ATTRS), label="Object type:")
+    accessconditions = forms.CharField(widget=TextInput(attrs=settings.INPUT_ATTRS), label="Conditions governing access:")
+    useconditions = forms.CharField(widget=TextInput(attrs=settings.INPUT_ATTRS), label="Conditions governing use:")
+    urlprefix = forms.CharField(widget=TextInput(attrs=settings.INPUT_ATTRS), label="URL prefix:")
+   
      
