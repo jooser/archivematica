@@ -332,14 +332,30 @@ def transfer_backlog_augment_search_results(raw_results):
     return modifiedResults
 
 def process_transfer(request, uuid):
+    response = {}
+
     if request.user.id:
         client = MCPClient()
-        job = models.Job.objects.filter(
-             sipuuid=uuid,
-             microservicegroup='Create SIP from Transfer',
-             currentstep='Awaiting decision'
-        )[0]
-        chain = models.MicroServiceChain.objects.get(
-            description='Create single SIP and continue processing'
-        )
-        result = client.execute(job.pk, chain.pk, request.user.id)
+        try:
+            job = models.Job.objects.filter(
+                sipuuid=uuid,
+                microservicegroup='Create SIP from Transfer',
+                currentstep='Awaiting decision'
+            )[0]
+            chain = models.MicroServiceChain.objects.get(
+                description='Create single SIP and continue processing'
+            )
+            result = client.execute(job.pk, chain.pk, request.user.id)
+
+            response['message'] = 'SIP created.'
+        except:
+            response['error']   = True
+            response['message'] = 'Error attempting to create SIP.'
+    else:
+        response['error']   = True
+        response['message'] = 'Must be logged in.'
+
+    return HttpResponse(
+        simplejson.JSONEncoder(encoding='utf-8').encode(response),
+        mimetype='application/json'
+    )
