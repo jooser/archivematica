@@ -323,13 +323,25 @@ def transfer_backlog_augment_search_results(raw_results):
     for item in raw_results.hits.hits:
         clone = item._source.copy()
 
-        #clone['filename'] = clone['basename']
+        clone['awaiting_creation'] = transfer_awaiting_sip_creation(clone['sipuuid'])
+
         clone['document_id'] = item['_id']
         clone['document_id_no_hyphens'] = item['_id'].replace('-', '____')
 
         modifiedResults.append(clone)
 
     return modifiedResults
+
+def transfer_awaiting_sip_creation(uuid):
+    try:
+        job = models.Job.objects.filter(
+            sipuuid=uuid,
+            microservicegroup='Create SIP from Transfer',
+            currentstep='Awaiting decision'
+        )[0]
+        return True
+    except:
+        return False
 
 def process_transfer(request, uuid):
     response = {}
