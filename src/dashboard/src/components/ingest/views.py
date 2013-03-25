@@ -36,7 +36,7 @@ import cPickle
 import components.decorators as decorators
 from components import helpers
 from components import advanced_search
-import os, sys, shutil
+import os, sys
 sys.path.append("/usr/lib/archivematica/archivematicaCommon")
 import elasticSearchFunctions
 sys.path.append("/usr/lib/archivematica/archivematicaCommon/externals")
@@ -332,18 +332,14 @@ def transfer_backlog_augment_search_results(raw_results):
     return modifiedResults
 
 def process_transfer(request, uuid):
-    transfer = models.Transfer.objects.get(uuid=uuid)
-
-    # work out path to transfer
-    shared_directory_path = helpers.get_server_config_value('sharedDirectory')
-    transfer_path = transfer.currentlocation.replace('%sharedPath%', shared_directory_path, 1)
-    #return HttpResponse(transfer_path)
-
-    # move transfer to processing directory and update DB to reflect this
-    processing_path = helpers.get_server_config_value('processingDirectory')
-    new_transfer_location = os.path.join(processing_path, os.path.basename(transfer_path[:-1]))
-    shutil.move(transfer_path, processing_path)
-    transfer.currentlocation = new_transfer_location + '/'
-    transfer.save()
-
-    return HttpResponse(new_transfer_location)
+    if request.user.id:
+        client = MCPClient()
+        job = models.Job.objects.filter(
+             sipuuid=uuid,
+             microservicegroup='Create SIP from Transfer',
+             currentstep='Awaiting decision'
+        )[0]
+        chain = models.MicroServiceChain.objects.get(
+            description='Create single SIP and continue processing'
+        )
+        result = client.execute(job.pk, chain.pk, request.user.id)
