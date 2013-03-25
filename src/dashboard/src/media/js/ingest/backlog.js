@@ -1,5 +1,30 @@
 $(document).ready(function() {
 
+  // activate completion buttons
+  $('.creation').each(function() {
+    var url = $(this).attr('href');
+    $(this).removeAttr('href');
+    this.url = url;
+    $(this).click(function() {
+      console.log(this.url);
+      // remove all button with same url
+      $('.creation').each(function() {
+        if (this.url == url) {
+          $(this).remove();
+        }
+      });
+
+      // complete SIP
+      $.ajax({
+        type: "POST",
+        url: url,
+        success: function(result) {
+          console.log(result);
+        }
+      });
+    });
+  });
+
   // create new form instance, providing a single row of default data
   var search = new advancedSearch.AdvancedSearchView({
     el: $('#search_form_container'),
