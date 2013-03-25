@@ -18,7 +18,7 @@
 from django.utils.dateformat import format
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from main import models
-import cPickle, pprint
+import cPickle, pprint, ConfigParser
 
 def pr(object):
     return pprint.pformat(object)
@@ -129,3 +129,13 @@ def set_setting(setting, value=''):
 
     setting_data.value = value
     setting_data.save()
+
+def get_server_config_value(field):
+    clientConfigFilePath = '/etc/archivematica/MCPServer/serverConfig.conf'
+    config = ConfigParser.SafeConfigParser()
+    config.read(clientConfigFilePath)
+
+    try:
+        return config.get('MCPServer', field) # "watchDirectoryPath")
+    except:
+        return ''
