@@ -1,4 +1,3 @@
-
 {% extends "layout_fluid.html" %}
 {% load breadcumbs %}
 
@@ -23,20 +22,42 @@
   {% include "administration/sidebar.html" %}
 
   <div class="span12">
-
-    <form class="form-stacked" method="post" action="{% url components.administration.views.administration_contentdm_dips %}">
-
     <h3>Archivists Toolkit DIP upload</h3>
+    {% if valid_submission %}
+        Form data saved
+    {% endif %}
+<p>
 
-	{% for radio in form.visible_fields %}
-        <div class="radio"> {{ radio.label }}
-            {{ radio }}	
-	</div><br>
-	{% endfor %}
+
+    <form class="form-stacked" method="post" action="{% url components.administration.views.administration_atk_dips %}">
+    {% if form.non_field_errors %}
+        <div class="form_errors">
+            {{ form.non_field_errors }}
+        </div>
+    {% endif %}
+
+    {% for field in form.visible_fields %}
+    <div class="field_content">
+        <label>{{ field.label_tag }}</label>  
+    <div class="field">
+
+        {% if field.help_text %}
+        <div class = "help_text">
+            {{ field.help_text }}
+        </div>
+        {% endif %}
+
+        {{ field }} {{ field.errors }}
+    </div> 
+    </div>
+    {% endfor %}
 
 	
-  </form>
-
+	<div class="actions">
+        <button type="submit" class="btn primary">Save</button>
+        </div>
+    </form>
+  
 </div>
 
 {% endblock %}

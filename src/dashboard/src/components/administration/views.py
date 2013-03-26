@@ -32,7 +32,9 @@ from django.contrib.auth.decorators import user_passes_test
 import urllib
 from components.administration.forms import AdministrationForm
 from components.administration.forms import AgentForm
-from components.administration.forms import ATkForm
+from components.administration.forms import ArchivistsToolkitConfigForm
+from components.administration.models import ArchivistsToolkitConfig
+
 import components.decorators as decorators
 
 """ @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -70,9 +72,17 @@ def administration_atom_dips(request):
     return render(request, 'administration/dips_edit.html', locals())
 
 def administration_atk_dips(request):
-    
-    form = ATkForm()
-    return render(request, 'administration/dips_atk_edit.html', {'form': form})
+    atk = ArchivistsToolkitConfig.objects.get(pk=1)
+    if request.POST:        
+        form = ArchivistsToolkitConfigForm(request.POST, instance=atk)
+        if form.is_valid():
+            new_atk = form.save()
+            new_atk.save()
+	    valid_submission = True
+    else:
+        form = ArchivistsToolkitConfigForm(instance=atk)
+    return render(request, 'administration/dips_atk_edit.html', locals())
+
 
 def administration_contentdm_dips(request):
     link_id = administration_contentdm_dip_destination_select_link_id()
