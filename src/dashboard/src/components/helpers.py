@@ -17,8 +17,10 @@
 
 from django.utils.dateformat import format
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
 from main import models
-import cPickle, pprint, ConfigParser
+import cPickle, pprint, ConfigParser, urllib
 
 def pr(object):
     return pprint.pformat(object)
@@ -139,3 +141,8 @@ def get_server_config_value(field):
         return config.get('MCPServer', field) # "watchDirectoryPath")
     except:
         return ''
+
+def redirect_with_get_params(url_name, *args, **kwargs):
+    url = reverse(url_name, args = args)
+    params = urllib.urlencode(kwargs)
+    return HttpResponseRedirect(url + "?%s" % params)

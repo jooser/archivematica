@@ -273,6 +273,9 @@ def ingest_browse_aip(request, jobuuid):
 
 def transfer_backlog(request):
     queries, ops, fields, types = advanced_search.search_parameter_prep(request)
+ 
+    if not 'query' in request.GET:
+        return helpers.redirect_with_get_params('components.ingest.views.transfer_backlog', query='', field='', type='')
 
     # set pagination-related variables to use in template
     search_params = advanced_search.extract_url_search_params_from_request(request)
