@@ -162,6 +162,7 @@ class SIP(models.Model):
     currentpath = models.TextField(db_column='currentPath', blank=True)
     # ...
     hidden = models.BooleanField(default=False, blank=False)
+    accessionid = models.CharField(max_length=255, db_column='accessionId')
 
     objects = SIPManager()
 
