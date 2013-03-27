@@ -51,13 +51,15 @@ def add(request):
     return render(request, 'accounts/add.html', {'form': form })
 
 def edit(request, id=None):
-    # Security check
-    if request.user.id != id:
+    # Forbidden if user isn't an admin and is trying to edit another user
+    if str(request.user.id) != str(id) and id != None:
         if request.user.is_superuser is False:
             return HttpResponseRedirect(reverse('main.views.forbidden'))
+
     # Load user
     if id is None:
         user = request.user
+        #id = request.user.id
         title = 'Edit your profile (%s)' % user
     else:
         try:
@@ -65,6 +67,7 @@ def edit(request, id=None):
             title = 'Edit user %s' % user
         except:
             raise Http404
+
     # Form
     if request.method == 'POST':
         form = UserChangeForm(request.POST, instance=user)
@@ -80,14 +83,29 @@ def edit(request, id=None):
             # regenerate API key if requested
             regenerate_api_key = request.POST.get('regenerate_api_key', '')
             if regenerate_api_key != '':
-                api_key = ApiKey.objects.get(user_id=user.pk)
+                try:
+                    api_key = ApiKey.objects.get(user_id=user.pk)
+                except ApiKey.DoesNotExist:
+                    api_key = ApiKey.objects.create(user=user)
                 api_key.key = api_key.generate_key()
                 api_key.save()
-            return HttpResponseRedirect(reverse('components.accounts.views.list'))
+
+            # determine where to redirect to
+            if request.user.is_superuser is False:
+                return_view = 'components.accounts.views.edit'
+            else:
+                return_view = 'components.accounts.views.list'
+
+            return HttpResponseRedirect(reverse(return_view))
     else:
+        form = UserChangeForm(instance=user)
+
+    # load API key for display
+    try:
         api_key_data = ApiKey.objects.get(user_id=user.pk)
         api_key = api_key_data.key
-        form = UserChangeForm(instance=user)
+    except:
+        api_key = '<no API key generated>'
 
     return render(request, 'accounts/edit.html', {
       'form': form,

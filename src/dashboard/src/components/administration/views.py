@@ -36,6 +36,7 @@ from components.administration.forms import ArchivistsToolkitConfigForm
 from components.administration.models import ArchivistsToolkitConfig
 
 import components.decorators as decorators
+import components.helpers as helpers
 
 """ @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
       Administration
@@ -300,3 +301,12 @@ def administration_premis_agent(request):
         form = AgentForm(instance=agent)
 
     return render(request, 'administration/premis_agent.html', locals())
+
+def administration_api(request):
+    if request.method == 'POST':
+        whitelist = request.POST.get('whitelist', '')
+        helpers.set_setting('api_whitelist', whitelist)
+    else:
+        whitelist = helpers.get_setting('api_whitelist', '127.0.0.1')
+
+    return render(request, 'administration/api.html', locals())

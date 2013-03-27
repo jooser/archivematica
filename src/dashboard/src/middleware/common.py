@@ -17,7 +17,7 @@
 
 from django.conf import settings
 from django.http import HttpResponseServerError, HttpResponseRedirect
-from django.template.base import TemplateDoesNotExist 
+from django.template.base import TemplateDoesNotExist
 
 class AJAXSimpleExceptionResponseMiddleware:
     def process_exception(self, request, exception):

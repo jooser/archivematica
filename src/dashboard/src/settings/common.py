@@ -140,7 +140,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'middleware.common.AJAXSimpleExceptionResponseMiddleware',
     'installer.middleware.ConfigurationCheckMiddleware',
-    'middleware.common.SpecificExceptionErrorPageResponseMiddleware' 
+    'middleware.common.SpecificExceptionErrorPageResponseMiddleware'
 )
 
 ROOT_URLCONF = 'urls'
