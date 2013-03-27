@@ -330,12 +330,14 @@ def copy_to_start_transfer(request):
 
         # relay accession data to MCP if presnt
         if accession != '':
-            temp_uuid = uuid.uuid4().__str__()
-            mcp_destination = destination.replace(SHARED_DIRECTORY_ROOT + '/', '%sharedPath%', 1) + '/'
+            #temp_uuid = uuid.uuid4().__str__()
+            temp_uuid = ''
+            #destination = destination + '-' + temp_uuid
+            mcp_destination = destination.replace(SHARED_DIRECTORY_ROOT + '/', '%sharedPath%', 1)
             sip = models.SIP.objects.create(
                 uuid=temp_uuid,
                 accessionid=accession,
-                currentpath=mcp_destination
+                currentpath=mcp_destination + '/'
             )
             sip.save()
 
