@@ -21,11 +21,16 @@ import sys
 import MySQLdb
 from time import localtime, strftime
 import argparse
+import logging
 
 #global variables
 db = None
 cursor = None
 testMode = 0
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+log.addHandler(logging.RotatingFileHandler(filename, mode='a', maxBytes=0, backupCount=0, encoding=None, delay=0))
 
 def recursive_file_gen(mydir):
     for root, dirs, files in os.walk(mydir):
@@ -76,7 +81,7 @@ def get_files_from_dip(dip_location, dip_name):
     # get a directory listing
     # for each item, set fileName and go
     try:
-        mydir = dip_location + "/" + dip_name + "/objects/"
+        mydir = dip_location + "objects/"
         mylist = list(recursive_file_gen(mydir))
         
         if len(mylist) > 0:
@@ -169,6 +174,7 @@ if __name__ == '__main__':
     parser.add_argument('--dbpass', dest='atdbpass', metavar="db password")
     parser.add_argument('--dip_location', metavar="dip location")
     parser.add_argument('--dip_name', metavar="dip name")
+    parser.add_argument('--dip_uuid', metavar="dip uuid")
     parser.add_argument('--atuser', metavar="at user")
     parser.add_argument('--restrictions', metavar="restrictions apply", default="premis", choices=RESTRICTIONS_CHOICES)
     parser.add_argument('--object_type', metavar="object type", default="")
@@ -183,7 +189,7 @@ if __name__ == '__main__':
     if not (args.atdb):
         get_user_input()
     
-    #print len(sys.argv)
+    #print all input arguments to log
     
     try:
         connect_db(args.atdbhost, args.atdbport, args.atdbuser, args.atdbpass, args.atdb)
