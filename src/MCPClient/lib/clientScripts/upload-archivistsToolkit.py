@@ -30,7 +30,7 @@ testMode = 0
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-log.addHandler(logging.RotatingFileHandler(filename, mode='a', maxBytes=0, backupCount=0, encoding=None, delay=0))
+logger.addHandler(logging.FileHandler('at_upload.log', mode='a'))
 
 def recursive_file_gen(mydir):
     for root, dirs, files in os.walk(mydir):
@@ -43,6 +43,7 @@ def connect_db(atdbhost, atdbport, atdbuser, atpass, atdb):
         cursor = db.cursor()
         return True
     except Exception:
+        logger.error('db error')
         raise
 
 def process_sql(str):
@@ -87,6 +88,7 @@ def get_files_from_dip(dip_location, dip_name):
         if len(mylist) > 0:
             return mylist
         else:
+            logger.error("no files in " + mydir)
             raise ValueError("cannot find dip")
     except Exception:
         raise
