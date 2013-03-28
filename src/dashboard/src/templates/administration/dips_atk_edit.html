@@ -30,27 +30,8 @@
 
 
     <form class="form-stacked" method="post" action="{% url components.administration.views.administration_atk_dips %}">
-    {% if form.non_field_errors %}
-        <div class="form_errors">
-            {{ form.non_field_errors }}
-        </div>
-    {% endif %}
 
-    {% for field in form.visible_fields %}
-    <div class="field_content">
-        <label>{{ field.label_tag }}</label>  
-    <div class="field">
-
-        {% if field.help_text %}
-        <div class = "help_text">
-            {{ field.help_text }}
-        </div>
-        {% endif %}
-
-        {{ field }} {{ field.errors }}
-    </div> 
-    </div>
-    {% endfor %}
+    {% include "_form.html" %}
 
 	
 	<div class="actions">
