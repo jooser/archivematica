@@ -23,6 +23,6 @@ register = Library()
 def is_checkbox(field):
     return field.field.widget.__class__.__name__.lower() == "checkboxinput"
 
-@register.filer
+@register.filter
 def is_radioselect(field):
     return field.field.widget.__class__.__name__.lower() == "radioselect"
