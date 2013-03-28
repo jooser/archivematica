@@ -90,17 +90,25 @@ def get_files_from_dip(dip_location, dip_name):
         else:
             logger.error("no files in " + mydir)
             raise ValueError("cannot find dip")
+            sys.exit(24)
     except Exception:
         raise
+        sys.exit(24)
 
 def upload_to_atk(mylist, atuser, ead_actuate, ead_show, object_type, use_statement, uri_prefix):
     for f in mylist:
-        print 'using ' + f
+        logger.info( 'using ' + f)
         file_name = os.path.basename(f)
+        logger.info('file_name is ' + file_name)
         uuid = file_name[0:36]
         #aipUUID = aip[5:41]
-        container1 = int(file_name[44:47])
-        container2 = int(file_name[48:52])
+        try:
+            container1 = int(file_name[44:47])
+            container2 = int(file_name[48:52])
+        except:
+            logger.error('file name does not have container ids in it')
+            sys.exit(25)
+ 
         short_file_name = file_name[37:]
         time_now = strftime("%Y-%m-%d %H:%M:%S", localtime())
         file_uri = uri_prefix + "/" + file_name
