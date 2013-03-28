@@ -806,7 +806,7 @@ UNLOCK TABLES;
 LOCK TABLES `Agents` WRITE;
 /*!40000 ALTER TABLE `Agents` DISABLE KEYS */;
 INSERT INTO `Agents` (`pk`, `agentIdentifierType`, `agentIdentifierValue`, `agentName`, `agentType`) VALUES (1,'preservation system','Archivematica-0.10-DEV','Archivematica','software');
-INSERT INTO `Agents` (`pk`, `agentIdentifierType`, `agentIdentifierValue`, `agentName`, `agentType`) VALUES (2,'repository code','ORG','Your Organization Name Here','repository code');
+INSERT INTO `Agents` (`pk`, `agentIdentifierType`, `agentIdentifierValue`, `agentName`, `agentType`) VALUES (2,'organization','rac_test1','Rockefeller Archive Center Test','repository code');
 /*!40000 ALTER TABLE `Agents` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -4630,7 +4630,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `administration_archiviststoolkitconfig` WRITE;
 /*!40000 ALTER TABLE `administration_archiviststoolkitconfig` DISABLE KEYS */;
-INSERT INTO `administration_archiviststoolkitconfig` (`pk`, `host`, `port`, `dbname`, `dbuser`, `dbpass`, `atuser`, `premis`, `ead_actuate`, `ead_show`, `object_type`, `use_statement`, `uri_prefix`, `access_conditions`, `use_conditions`) VALUES ('1','192.168.1.124',3306,'atk01','ATUser','Password123','atkuser','premis','onRequest','new','','','http://www.rockarch.org/','','');
+INSERT INTO `administration_archiviststoolkitconfig` (`pk`, `host`, `port`, `dbname`, `dbuser`, `dbpass`, `atuser`, `premis`, `ead_actuate`, `ead_show`, `object_type`, `use_statement`, `uri_prefix`, `access_conditions`, `use_conditions`) VALUES ('1','192.168.1.124',3306,'atk01','ATUser','Password123','atkuser','premis','onRequest','new','','Image-Service','http://www.rockarch.org/','','');
 /*!40000 ALTER TABLE `administration_archiviststoolkitconfig` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
