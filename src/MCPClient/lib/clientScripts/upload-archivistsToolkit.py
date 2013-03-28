@@ -27,8 +27,9 @@ import logging
 db = None
 cursor = None
 testMode = 0
+base_fv_id = 1
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.FileHandler('at_upload.log', mode='a'))
 
@@ -41,12 +42,14 @@ def connect_db(atdbhost, atdbport, atdbuser, atpass, atdb):
     try:
         db = MySQLdb.connect(atdbhost,atdbuser,atpass,atdb)
         cursor = db.cursor()
-        return True
+        logger.info('connected to db' + atdb)
+        return db, cursor 
     except Exception:
         logger.error('db error')
         raise
 
 def process_sql(str):
+    global cursor 
     if testMode:
         print str
     else:
@@ -96,15 +99,32 @@ def get_files_from_dip(dip_location, dip_name):
         sys.exit(24)
 
 def upload_to_atk(mylist, atuser, ead_actuate, ead_show, object_type, use_statement, uri_prefix):
+    global db
+    global cursor
+    db, cursor = connect_db(args.atdbhost, args.atdbport, args.atdbuser, args.atdbpass, args.atdb)
+    sql0 = "select max(fileVersionId) from FileVersions"
+    logger.debug('sql0: ' + sql0)
+    cursor.execute(sql0)
+    data = cursor.fetchone()
+    if not data[0]:
+        newfVID = 1
+    else:
+        newfVID = int(data[0]) 
+    logger.debug('base file version id found is ' + str(data[0]))
+    global base_fv_id 
+    base_fv_id = newfVID        
+
+
     for f in mylist:
+        base_fv_id+=1 
         logger.info( 'using ' + f)
         file_name = os.path.basename(f)
-        logger.info('file_name is ' + file_name)
+        logger.debug('file_name is ' + file_name)
         uuid = file_name[0:36]
         #aipUUID = aip[5:41]
         try:
-            container1 = int(file_name[44:47])
-            container2 = int(file_name[48:52])
+            container1 = file_name[40:43]
+            container2 = file_name[44:47]
         except:
             logger.error('file name does not have container ids in it')
             sys.exit(25)
@@ -112,9 +132,8 @@ def upload_to_atk(mylist, atuser, ead_actuate, ead_show, object_type, use_statem
         short_file_name = file_name[37:]
         time_now = strftime("%Y-%m-%d %H:%M:%S", localtime())
         file_uri = uri_prefix + "/" + file_name
-
-        sql1 = "select a.archDescriptionInstancesId, a.resourceComponentId, b.dateBegin, b.dateEnd, b.dateExpression from ArchDescriptionInstances a join ResourcesComponents b on a.resourceComponentId = b.resourceComponentId where (container1numericIndicator = %d and container2NumericIndicator = %d)" % ( container1, container2);
-
+        sql1 = "select a.archDescriptionInstancesId, a.resourceComponentId, b.dateBegin, b.dateEnd, b.dateExpression from ArchDescriptionInstances a join ResourcesComponents b on a.resourceComponentId = b.resourceComponentId where (container1numericIndicator = '%s' and container2NumericIndicator = '%s')" % ( container1, container2);
+        logger.info('sql1:' + sql1) 
         cursor.execute(sql1)
         data = cursor.fetchone()
         archDID = data[0]
@@ -123,29 +142,24 @@ def upload_to_atk(mylist, atuser, ead_actuate, ead_show, object_type, use_statem
         dateEnd = data[3]
         dateExpression = data[4]
  
-        print "found archDescriptionInstancesId " + str(archDID) + ", rcid " + str(rcid)
+        logger.debug( "found archDescriptionInstancesId " + str(archDID) + ", rcid " + str(rcid))
 
         sql2 = "select repositoryId from Repositories" 
+        logger.debug('sql2: ' + sql2)
 
         cursor.execute(sql2)
         data = cursor.fetchone()
         repoId = data[0]
-
+        logger.debug('repoId: ' + str(repoId))
         sql3 = " select max(archDescriptionInstancesId) from ArchDescriptionInstances"
+        logger.debug('sql3: ' + sql3) 
         cursor.execute(sql3)
         data = cursor.fetchone()
         newaDID = int(data[0]) + 1
 
-        sql3a = "select max(fileVersionId) from FileVersions"
-        cursor.execute(sql3a)
-        data = cursor.fetchone()
-        if not data[0]:
-            newfVID = 1
-        else:
-            newfVID = int(data[0]) +1 
-
+ 
         sql4 = "insert into ArchDescriptionInstances (archDescriptionInstancesId, instanceDescriminator, instanceType, resourceComponentId, parentResourceId) values (%d, 'digital','Digital object',%d,1)" % (newaDID, rcid)
-
+        logger.debug('sql4:' + sql4)
         process_sql(sql4)
 
         sql5 = """INSERT INTO DigitalObjects                  
@@ -153,19 +167,19 @@ def upload_to_atk(mylist, atuser, ead_actuate, ead_show, object_type, use_statem
             `dateExpression`,`dateBegin`,`dateEnd`,`languageCode`,`restrictionsApply`,
             `eadDaoActuate`,`eadDaoShow`,`metsIdentifier`,`objectType`,`objectOrder`,
             `archDescriptionInstancesId`,`repositoryId`)
-           VALUES (1,'%s', '%s','%s','%s','%s','%s',%d, %d,'English',%d,'%s','%s','%s','%s',0,%d,1)""" % (timeNow, timeNow, atuser, atuser, short_file_name,dateExpression, dateBegin, dateEnd, 0, ead_actuate, ead_show,uuid, object_type, newaDID)
-
+           VALUES (1,'%s', '%s','%s','%s','%s','%s',%d, %d,'English',%d,'%s','%s','%s','%s',0,%d,%d)""" % (time_now, time_now, atuser, atuser, short_file_name,dateExpression, dateBegin, dateEnd, 0, ead_actuate, ead_show,uuid, object_type, newaDID, repoId)
+        logger.debug('sql5: ' + sql5)
         process_sql(sql5)
 
         sql6 = """insert into FileVersions (fileVersionId, version, lastUpdated, created, lastUpdatedBy, createdBy, uri, useStatement, sequenceNumber, eadDaoActuate, 
               eadDaoShow)
               values 
-           (%d, 1, '%s', '%s', '%s', '%s', '%s', '%s', %d, '%s','%s')""" % (newfVID,timeNow, timeNow,atuser,atuser,file_uri,use_statement,0, ead_actuate,ead_show)
-
+           (%d, 1, '%s', '%s', '%s', '%s', '%s', '%s', %d, '%s','%s')""" % (base_fv_id,time_now, time_now,atuser,atuser,file_uri,use_statement,0, ead_actuate,ead_show)
+        logger.debug('sql6: ' + sql6)
         process_sql(sql6)
     
     print "done all files"
-    processSql("commit")
+    process_sql("commit")
 
 if __name__ == '__main__':
     
@@ -202,7 +216,6 @@ if __name__ == '__main__':
     #print all input arguments to log
     
     try:
-        connect_db(args.atdbhost, args.atdbport, args.atdbuser, args.atdbpass, args.atdb)
         mylist = get_files_from_dip(args.dip_location, args.dip_name)
         upload_to_atk(mylist, args.atuser, args.ead_actuate, args.ead_show, args.object_type, args.use_statement, args.uri_prefix)
     except Exception as exc:
