@@ -328,19 +328,17 @@ def copy_to_start_transfer(request):
             destination = os.path.join(destination, basename)
             destination = pad_destination_filepath_if_it_already_exists(destination)
 
-        # relay accession data to MCP if presnt
+        # relay accession via DB row that MCPClient scripts will use to get
+        # supplementary info from
         if accession != '':
-            #temp_uuid = uuid.uuid4().__str__()
-            temp_uuid = ''
-            #destination = destination + '-' + temp_uuid
-            mcp_destination = destination.replace(SHARED_DIRECTORY_ROOT + '/', '%sharedPath%', 1)
+            temp_uuid = uuid.uuid4().__str__()
+            mcp_destination = '%sharedPath%watchedDirectories/system/autoProcessSIP/' + basename
             sip = models.SIP.objects.create(
                 uuid=temp_uuid,
                 accessionid=accession,
                 currentpath=mcp_destination + '/'
             )
             sip.save()
-
         try:
             shutil.move(filepath, destination)
         except:
