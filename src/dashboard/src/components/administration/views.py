@@ -37,6 +37,12 @@ from components.administration.models import ArchivistsToolkitConfig
 
 import components.decorators as decorators
 import components.helpers as helpers
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+logger.addHandler(logging.FileHandler('django_debug.log', mode='a'))
 
 """ @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
       Administration
@@ -77,8 +83,10 @@ def administration_atk_dips(request):
     if request.POST:        
         form = ArchivistsToolkitConfigForm(request.POST, instance=atk)
         if form.is_valid():
+            logger.debug("saving form")
             new_atk = form.save()
             new_atk.save()
+            logger.debug("new_atk {}", new_atk.dbname)
             #save this new form data into MicroServiceChoiceReplacementDic
             new_mscrDic = models.MicroServiceChoiceReplacementDic.objects.get(id='5395d1ea-a892-4029-b5a8-5264a17bbade')
             new_settings_string = '{{"%host%":"{}", "%port%":"{}", "%dbname%":"{}", "%dbuser%":"{}", "%dbpass%":"{}", \
@@ -88,7 +96,7 @@ def administration_atk_dips(request):
                                                                     new_atk.dbpass,new_atk.atuser,new_atk.premis, new_atk.object_type, 
                                                                     new_atk.ead_actuate, new_atk.ead_show,new_atk.use_statement, 
                                                                     new_atk.uri_prefix, new_atk.access_conditions, new_atk.use_conditions)
-                                   
+            logger.debug('new settings {}', new_settings_string)                       
             new_mscrDic.replacementDic = new_settings_string
             new_mscrDic.save()                      
 	    valid_submission = True
