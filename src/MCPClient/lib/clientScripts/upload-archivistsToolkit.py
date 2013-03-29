@@ -79,13 +79,13 @@ def get_user_input():
     return atdbhost, atdbport, atdbuser, atpass, atdb, dip_location, dip_name, atuser, object_type, ead_actuate, ead_show, use_statement, uri_prefix
 
 
-def get_files_from_dip(dip_location, dip_name):
+def get_files_from_dip(dip_location, dip_name, dip_uuid):
     #need to find files in objects dir of dip:
     # go to dipLocation/dipName/objects
     # get a directory listing
     # for each item, set fileName and go
     try:
-        mydir = dip_location + "objects/"
+        mydir = dip_location + dip_name + "-" + dip_uuid + "/objects/"
         mylist = list(recursive_file_gen(mydir))
         
         if len(mylist) > 0:
@@ -123,16 +123,17 @@ def upload_to_atk(mylist, atuser, ead_actuate, ead_show, object_type, use_statem
         uuid = file_name[0:36]
         #aipUUID = aip[5:41]
         try:
-            container1 = file_name[40:43]
-            container2 = file_name[44:47]
+            container1 = file_name[44:47]
+            container2 = file_name[48:51]
         except:
             logger.error('file name does not have container ids in it')
             sys.exit(25)
  
         short_file_name = file_name[37:]
         time_now = strftime("%Y-%m-%d %H:%M:%S", localtime())
-        file_uri = uri_prefix + "/" + file_name
-        sql1 = "select a.archDescriptionInstancesId, a.resourceComponentId, b.dateBegin, b.dateEnd, b.dateExpression from ArchDescriptionInstances a join ResourcesComponents b on a.resourceComponentId = b.resourceComponentId where (container1numericIndicator = '%s' and container2NumericIndicator = '%s')" % ( container1, container2);
+        file_uri = uri_prefix  + file_name
+        sql1="select  d.archdescriptioninstancesid, c.resourceComponentId, b.dateBegin, b.dateEnd, b.dateExpression from resourcescomponents a join resourcescomponents b on (a.resourcecomponentid = b.parentresourcecomponentid) join resourcescomponents c on (b.resourcecomponentid = c.parentresourcecomponentid) join archdescriptioninstances d on (c.resourcecomponentid = d.resourcecomponentid) where a.resourceid = 31 and d.container1numericindicator = '%s' and d.container2numericindicator = '%s'" % ( container1, container2);
+#sql1 = "select a.archDescriptionInstancesId, a.resourceComponentId, b.dateBegin, b.dateEnd, b.dateExpression from ArchDescriptionInstances a join ResourcesComponents b on a.resourceComponentId = b.resourceComponentId where (container1numericIndicator = '%s' and container2NumericIndicator = '%s')" % ( container1, container2);
         logger.info('sql1:' + sql1) 
         cursor.execute(sql1)
         data = cursor.fetchone()
@@ -158,7 +159,7 @@ def upload_to_atk(mylist, atuser, ead_actuate, ead_show, object_type, use_statem
         newaDID = int(data[0]) + 1
 
  
-        sql4 = "insert into ArchDescriptionInstances (archDescriptionInstancesId, instanceDescriminator, instanceType, resourceComponentId, parentResourceId) values (%d, 'digital','Digital object',%d,1)" % (newaDID, rcid)
+        sql4 = "insert into ArchDescriptionInstances (archDescriptionInstancesId, instanceDescriminator, instanceType, resourceComponentId) values (%d, 'digital','Digital object',%d)" % (newaDID, rcid)
         logger.debug('sql4:' + sql4)
         process_sql(sql4)
 
@@ -216,7 +217,7 @@ if __name__ == '__main__':
     #print all input arguments to log
     
     try:
-        mylist = get_files_from_dip(args.dip_location, args.dip_name)
+        mylist = get_files_from_dip(args.dip_location, args.dip_name, args.dip_uuid)
         upload_to_atk(mylist, args.atuser, args.ead_actuate, args.ead_show, args.object_type, args.use_statement, args.uri_prefix)
     except Exception as exc:
         print exc
