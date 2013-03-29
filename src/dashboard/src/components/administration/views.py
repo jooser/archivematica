@@ -79,6 +79,20 @@ def administration_atk_dips(request):
         if form.is_valid():
             new_atk = form.save()
             new_atk.save()
+            #save this new form data into MicroServiceChoiceReplacementDic
+            new_mscrDic = models.MicroServiceChoiceReplacementDic.objects.get(id='5395d1ea-a892-4029-b5a8-5264a17bbade')
+            new_settings_string = '{"%host%":"%(host)", "%port%":"%(port)", "%dbname%":"%(dbname)", "%dbuser%":"%(dbuser)", \
+                                   "%dbpass%":"%(dbpass)", "%atuser%":"%(atuser)", "%restrictions%":"%(restrictions)",  \
+                                   "%object_type%":"%(object_type)", "%ead_actuate%":"%(ead_actuate)", "%ead_show%":"%(ead_new)",  \
+                                   "%use_statement%":"%(use_statement)", "%uri_prefix%":"%(uri_prefix)", \
+                                   "%access_conditions%":"%(access_conditions)", "%use_conditions%":"%(use_conditions)"}' \
+                                   % {'host': new_atk.host, 'port': new_atk.port, 'dbname': new_atk.dbname, 'dbuser':new_atk.dbuser,
+                                      'dbpass':new_atk.dbpass, 'atuser': new_atk.atuser, 'restrictions': new_atk.premis, 
+                                      'object_type': new_atk.object_type, 'ead_actuate': new_atk.ead_actuate, 'ead_show': new_atk.ead_show,
+                                      'use_statement': new_atk.use_statement, 'uri_prefix': new_atk.uri_prefix, 
+                                      'access_conditions': new_atk.access_conditions, 'use_conditions': new_atk.use_conditions}
+            new_mscrDic.replacementDic = new_settings_string
+            new_mscrDic.save()                      
 	    valid_submission = True
     else:
         form = ArchivistsToolkitConfigForm(instance=atk)
