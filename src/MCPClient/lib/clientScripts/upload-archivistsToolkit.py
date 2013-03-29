@@ -29,9 +29,10 @@ cursor = None
 testMode = 0
 base_fv_id = 1
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-logger.addHandler(logging.FileHandler('at_upload.log', mode='a'))
+logger.addHandler(logging.NullHandler())
+#logger.addHandler(logging.FileHandler('at_upload.log', mode='a'))
 
 def recursive_file_gen(mydir):
     for root, dirs, files in os.walk(mydir):
@@ -54,6 +55,8 @@ def process_sql(str):
         print str
     else:
         cursor.execute(str)            
+        newID = cursor.lastrowid
+        return newID
 
 def get_user_input():
     print "Archivematica import to AT script"
@@ -161,7 +164,7 @@ def upload_to_atk(mylist, atuser, ead_actuate, ead_show, object_type, use_statem
  
         sql4 = "insert into ArchDescriptionInstances (archDescriptionInstancesId, instanceDescriminator, instanceType, resourceComponentId) values (%d, 'digital','Digital object',%d)" % (newaDID, rcid)
         logger.debug('sql4:' + sql4)
-        process_sql(sql4)
+        adid = process_sql(sql4)
 
         sql5 = """INSERT INTO DigitalObjects                  
            (`version`,`lastUpdated`,`created`,`lastUpdatedBy`,`createdBy`,`title`,
@@ -170,12 +173,11 @@ def upload_to_atk(mylist, atuser, ead_actuate, ead_show, object_type, use_statem
             `archDescriptionInstancesId`,`repositoryId`)
            VALUES (1,'%s', '%s','%s','%s','%s','%s',%d, %d,'English',%d,'%s','%s','%s','%s',0,%d,%d)""" % (time_now, time_now, atuser, atuser, short_file_name,dateExpression, dateBegin, dateEnd, 0, ead_actuate, ead_show,uuid, object_type, newaDID, repoId)
         logger.debug('sql5: ' + sql5)
-        process_sql(sql5)
+        doID = process_sql(sql5)
 
-        sql6 = """insert into FileVersions (fileVersionId, version, lastUpdated, created, lastUpdatedBy, createdBy, uri, useStatement, sequenceNumber, eadDaoActuate, 
-              eadDaoShow)
+        sql6 = """insert into FileVersions (fileVersionId, version, lastUpdated, created, lastUpdatedBy, createdBy, uri, useStatement, sequenceNumber, eadDaoActuate,eadDaoShow, digitalObjectId)
               values 
-           (%d, 1, '%s', '%s', '%s', '%s', '%s', '%s', %d, '%s','%s')""" % (base_fv_id,time_now, time_now,atuser,atuser,file_uri,use_statement,0, ead_actuate,ead_show)
+           (%d, 1, '%s', '%s', '%s', '%s', '%s', '%s', %d, '%s','%s', %d)""" % (base_fv_id,time_now, time_now,atuser,atuser,file_uri,use_statement,0, ead_actuate,ead_show, doID)
         logger.debug('sql6: ' + sql6)
         process_sql(sql6)
     
