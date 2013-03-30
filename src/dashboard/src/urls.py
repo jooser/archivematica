@@ -16,10 +16,10 @@
 # along with Archivematica.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.conf.urls.defaults import *
-import settings
+from django.conf import settings
 
 urlpatterns = patterns('',
-    (r'^mcp/', include('mcp.urls')),
+    (r'^mcp/', include('components.mcp.urls')),
     (r'^installer/', include('installer.urls')),
     (r'^administration/accounts/', include('components.accounts.urls')),
     (r'^archival-storage/', include('components.archival_storage.urls')),

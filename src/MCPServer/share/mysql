@@ -785,7 +785,6 @@ UNLOCK TABLES;
 LOCK TABLES `Agents` WRITE;
 /*!40000 ALTER TABLE `Agents` DISABLE KEYS */;
 INSERT INTO `Agents` (`pk`, `agentIdentifierType`, `agentIdentifierValue`, `agentName`, `agentType`) VALUES (1,'preservation system','Archivematica-0.10-DEV','Archivematica','software');
-INSERT INTO `Agents` (`pk`, `agentIdentifierType`, `agentIdentifierValue`, `agentName`, `agentType`) VALUES (2,'organization','agentid','agent','organization');
 /*!40000 ALTER TABLE `Agents` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1125,6 +1124,17 @@ INSERT INTO `MicroServiceChainLinks` (`pk`, `currentTask`, `defaultNextChainLink
 INSERT INTO `MicroServiceChainLinks` (`pk`, `currentTask`, `defaultNextChainLink`, `defaultPlaySound`, `microserviceGroup`, `reloadFileList`, `defaultExitMessage`, `replaces`, `lastModified`) VALUES ('0ba9bbd9-6c21-4127-b971-12dbc43c8119','63f265b3-57f5-4f14-90f5-cf0179dc366e','7d728c39-395f-4892-8193-92f086c0546f',NULL,'Process submission documentation',1,'Failed',NULL,'2012-10-02 00:25:06');
 INSERT INTO `MicroServiceChainLinks` (`pk`, `currentTask`, `defaultNextChainLink`, `defaultPlaySound`, `microserviceGroup`, `reloadFileList`, `defaultExitMessage`, `replaces`, `lastModified`) VALUES ('0c94e6b5-4714-4bec-82c8-e187e0c04d77','1b8b596f-b6ee-440f-b59c-5e8b39a2b46d',NULL,NULL,'Approve transfer',1,'Failed',NULL,'2012-10-02 00:25:06');
 INSERT INTO `MicroServiceChainLinks` (`pk`, `currentTask`, `defaultNextChainLink`, `defaultPlaySound`, `microserviceGroup`, `reloadFileList`, `defaultExitMessage`, `replaces`, `lastModified`) VALUES ('0c96c798-9ace-4c05-b3cf-243cdad796b7','a73b3690-ac75-4030-bb03-0c07576b649b','61c316a6-0a50-4f65-8767-1f44b1eeb6dd',NULL,'Include default Transfer processingMCP.xml',1,'Failed',NULL,'2012-10-02 00:25:06');
+<<<<<<< HEAD
+=======
+INSERT INTO `MicroServiceChainLinks` (`pk`, `currentTask`, `defaultNextChainLink`, `defaultPlaySound`, `microserviceGroup`, `reloadFileList`, `defaultExitMessage`, `replaces`, `lastModified`) VALUES ('0ca642b8-d6e7-4204-ac66-7209c3bae1b0','9c04a06d-f3f6-4cb9-bb47-ec3761c13903',NULL,NULL,'Normalize',1,'Failed',NULL,'2012-11-10 02:08:12');
+INSERT INTO `MicroServiceChainLinks` (`pk`, `currentTask`, `defaultNextChainLink`, `defaultPlaySound`, `microserviceGroup`, `reloadFileList`, `defaultExitMessage`, `replaces`, `lastModified`) VALUES ('0cc7077a-5c55-4229-ab7d-f92935e4f3d6','032bff90-0ec1-4c77-aa29-6a04183e99ef',NULL,NULL,'Normalize',1,'Failed',NULL,'2012-11-10 02:09:39');
+INSERT INTO `MicroServiceChainLinks` (`pk`, `currentTask`, `defaultNextChainLink`, `defaultPlaySound`, `microserviceGroup`, `reloadFileList`, `defaultExitMessage`, `replaces`, `lastModified`) VALUES ('0ceb8f18-8896-409b-891f-694c40d990fe','3694dc49-bcc5-4b70-8721-50de40985af7',NULL,NULL,'Normalize',1,'Failed',NULL,'2012-11-10 02:09:44');
+INSERT INTO `MicroServiceChainLinks` (`pk`, `currentTask`, `defaultNextChainLink`, `defaultPlaySound`, `microserviceGroup`, `reloadFileList`, `defaultExitMessage`, `replaces`, `lastModified`) VALUES ('0cf7efd6-5475-4eb2-b11c-ac796a59f1af','0853f765-5915-4e2d-b732-be56cdb05275',NULL,NULL,'Normalize',1,'Failed',NULL,'2012-11-10 02:08:27');
+INSERT INTO `MicroServiceChainLinks` (`pk`, `currentTask`, `defaultNextChainLink`, `defaultPlaySound`, `microserviceGroup`, `reloadFileList`, `defaultExitMessage`, `replaces`, `lastModified`) VALUES ('0d381b64-dadd-4d3c-886e-8f4dd508e3a8','17fd2d32-e84d-4103-aee1-74f72460e8f8',NULL,NULL,'Normalize',1,'Failed',NULL,'2012-11-10 02:08:57');
+INSERT INTO `MicroServiceChainLinks` (`pk`, `currentTask`, `defaultNextChainLink`, `defaultPlaySound`, `microserviceGroup`, `reloadFileList`, `defaultExitMessage`, `replaces`, `lastModified`) VALUES ('0d7f5dc2-b9af-43bf-b698-10fdcc5b014d','be4e3ee6-9be3-465f-93f0-77a4ccdfd1db',NULL,NULL,'Reject AIP',1,'Failed',NULL,'2013-03-27 20:12:26');
+INSERT INTO `MicroServiceChainLinks` (`pk`, `currentTask`, `defaultNextChainLink`, `defaultPlaySound`, `microserviceGroup`, `reloadFileList`, `defaultExitMessage`, `replaces`, `lastModified`) VALUES ('0dd6144f-8ca8-4f0c-9596-0bb44f30065c','0040be51-608e-470b-8007-9edec255fe3e',NULL,NULL,'Normalize',1,'Failed',NULL,'2012-11-10 02:08:08');
+INSERT INTO `MicroServiceChainLinks` (`pk`, `currentTask`, `defaultNextChainLink`, `defaultPlaySound`, `microserviceGroup`, `reloadFileList`, `defaultExitMessage`, `replaces`, `lastModified`) VALUES ('0df8ce53-7a3b-4780-8bcc-2a8680130c88','513df2fd-62a7-4186-8f49-82b9cfbeae83',NULL,NULL,'Normalize',1,'Failed',NULL,'2012-11-10 02:08:37');
+>>>>>>> master
 INSERT INTO `MicroServiceChainLinks` (`pk`, `currentTask`, `defaultNextChainLink`, `defaultPlaySound`, `microserviceGroup`, `reloadFileList`, `defaultExitMessage`, `replaces`, `lastModified`) VALUES ('0e06d968-4b5b-4084-aab4-053a2a8d1679','7c02a87b-7113-4851-97cd-2cf9d3fc0010','61c316a6-0a50-4f65-8767-1f44b1eeb6dd',NULL,'Quarantine',1,'Failed',NULL,'2012-10-02 00:25:06');
 INSERT INTO `MicroServiceChainLinks` (`pk`, `currentTask`, `defaultNextChainLink`, `defaultPlaySound`, `microserviceGroup`, `reloadFileList`, `defaultExitMessage`, `replaces`, `lastModified`) VALUES ('0e1a8a6b-abcc-4ed6-b4fb-cbccfdc23ef5','7c02a87b-7113-4851-97cd-2cf9d3fc0010','61c316a6-0a50-4f65-8767-1f44b1eeb6dd',NULL,'Verify transfer compliance',1,'Failed',NULL,'2012-10-02 00:25:06');
 INSERT INTO `MicroServiceChainLinks` (`pk`, `currentTask`, `defaultNextChainLink`, `defaultPlaySound`, `microserviceGroup`, `reloadFileList`, `defaultExitMessage`, `replaces`, `lastModified`) VALUES ('0e379b19-771e-4d90-a7e5-1583e4893c56','7c02a87b-7113-4851-97cd-2cf9d3fc0010','61c316a6-0a50-4f65-8767-1f44b1eeb6dd',NULL,'Extract packages',1,'Failed',NULL,'2012-10-02 00:25:06');
@@ -1789,7 +1799,7 @@ INSERT INTO `MicroServiceChains` (`pk`, `startingLink`, `description`, `replaces
 INSERT INTO `MicroServiceChains` (`pk`, `startingLink`, `description`, `replaces`, `lastModified`) VALUES ('3c7124dc-5b28-44d6-8f6e-ddc7cde1fe66','4fac5503-8fff-4c18-acf4-5b4d62654e0f','Normalize for access',NULL,'2012-10-02 00:25:08');
 INSERT INTO `MicroServiceChains` (`pk`, `startingLink`, `description`, `replaces`, `lastModified`) VALUES ('3f798b85-2652-4718-b32e-30dc13ec0da8','bf11cf60-c7aa-478f-98a6-2dd9647aa35f','Normalize for access',NULL,'2012-10-02 00:25:08');
 INSERT INTO `MicroServiceChains` (`pk`, `startingLink`, `description`, `replaces`, `lastModified`) VALUES ('4171636c-e013-4ecc-ae45-60b5458c208b','998044bb-6260-452f-a742-cfb19e80125b','Transfers In progress',NULL,'2012-10-02 00:25:08');
-INSERT INTO `MicroServiceChains` (`pk`, `startingLink`, `description`, `replaces`, `lastModified`) VALUES ('433f4e6b-1ef4-49f8-b1e4-49693791a806','3467d003-1603-49e3-b085-e58aa693afed','Reject AIP',NULL,'2012-10-02 00:25:08');
+INSERT INTO `MicroServiceChains` (`pk`, `startingLink`, `description`, `replaces`, `lastModified`) VALUES ('433f4e6b-1ef4-49f8-b1e4-49693791a806','0d7f5dc2-b9af-43bf-b698-10fdcc5b014d','Reject AIP',NULL,'2012-10-02 00:25:08');
 INSERT INTO `MicroServiceChains` (`pk`, `startingLink`, `description`, `replaces`, `lastModified`) VALUES ('43d08f97-3e41-47f9-94af-a8817e0914bd','eca5731c-d6a3-4e20-a83f-dde167dd7642','Normalize for preservation',NULL,'2012-10-02 00:25:08');
 INSERT INTO `MicroServiceChains` (`pk`, `startingLink`, `description`, `replaces`, `lastModified`) VALUES ('45811f43-40d2-4efa-9c1d-876417834b7f','35c8763a-0430-46be-8198-9ecb23f895c8','manual normalization',NULL,'2012-10-02 00:25:08');
 INSERT INTO `MicroServiceChains` (`pk`, `startingLink`, `description`, `replaces`, `lastModified`) VALUES ('46824987-bd47-4139-9871-6566f5abdf1a','5fbecef2-49e9-4585-81a2-267b8bbcd568','Tika',NULL,'2012-10-23 19:41:24');
@@ -2607,6 +2617,55 @@ CREATE TABLE `SourceDirectories` (
   PRIMARY KEY (`pk`),
   KEY `SourceDirectories` (`pk`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `DashboardSettings`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `DashboardSettings` (
+  `pk` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `value` longtext COLLATE utf8_unicode_ci,
+  `lastModified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`pk`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `StorageDirectories`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `StorageDirectories` (
+  `pk` varchar(50) NOT NULL DEFAULT '',
+  `path` longtext,
+  `replaces` varchar(50) DEFAULT NULL,
+  `lastModified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`pk`),
+  KEY `StorageDirectories` (`pk`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `tastypie_apiaccess`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tastypie_apiaccess` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `identifier` varchar(255) NOT NULL,
+  `url` varchar(255) NOT NULL,
+  `request_method` varchar(10) NOT NULL,
+  `accessed` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `tastypie_apikey`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tastypie_apikey` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `key` varchar(256) NOT NULL,
+  `created` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_id` (`user_id`),
+  KEY `tastypie_apikey_45544485` (`key`),
+  CONSTRAINT `user_id_refs_id_56bfdb62` FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

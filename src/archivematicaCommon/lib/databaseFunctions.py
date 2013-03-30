@@ -55,17 +55,35 @@ def insertIntoFiles(fileUUID, filePath, enteredSystem=databaseInterface.getUTCDa
         print >>sys.stderr, "transferUUID:", transferUUID
         raise Exception("not supported yet - both SIP and transfer UUID's defined (or neither defined)", sipUUID + "-" + transferUUID)
 
+def getAgentForFileUUID(fileUUID):
+    agent = None
+    rows = databaseInterface.queryAllSQL("""SELECT sipUUID, transferUUID FROM Files WHERE fileUUID = '%s';""" % (fileUUID))
+    sipUUID, transferUUID = rows[0]
+    if sipUUID:
+        rows = databaseInterface.queryAllSQL("""SELECT variableValue FROM UnitVariables WHERE unitType = '%s' AND unitUUID = '%s' AND variable = '%s';""" % ('SIP', sipUUID, "activeAgent"))
+        if len(rows):
+            agent = "'%s'" % (rows[0])
+    if transferUUID and not agent: #agent hasn't been found yet
+        rows = databaseInterface.queryAllSQL("""SELECT variableValue FROM UnitVariables WHERE unitType = '%s' AND unitUUID = '%s' AND variable = '%s';""" % ("Transfer", transferUUID, "activeAgent"))
+        if len(rows):
+            agent = "'%s'" % (rows[0])
+    
+    return agent
+
 def insertIntoEvents(fileUUID="", eventIdentifierUUID="", eventType="", eventDateTime=databaseInterface.getUTCDate(), eventDetail="", eventOutcome="", eventOutcomeDetailNote=""):
+    agent = getAgentForFileUUID(fileUUID)
+    if not agent:
+        agent = 'NULL'
     if eventIdentifierUUID == "":
         eventIdentifierUUID = uuid.uuid4().__str__()
-    databaseInterface.runSQL("""INSERT INTO Events (fileUUID, eventIdentifierUUID, eventType, eventDateTime, eventDetail, eventOutcome, eventOutcomeDetailNote)
+    databaseInterface.runSQL("""INSERT INTO Events (fileUUID, eventIdentifierUUID, eventType, eventDateTime, eventDetail, eventOutcome, eventOutcomeDetailNote, linkingAgentIdentifier)
             VALUES ( '"""   + escapeForDB(fileUUID) + databaseInterface.separator \
                             + escapeForDB(eventIdentifierUUID) + databaseInterface.separator \
                             + escapeForDB(eventType) + databaseInterface.separator \
                             + escapeForDB(eventDateTime) + databaseInterface.separator \
                             + escapeForDB(eventDetail) + databaseInterface.separator \
                             + escapeForDB(eventOutcome) + databaseInterface.separator \
-                            + escapeForDB(eventOutcomeDetailNote) + "' )" )
+                            + escapeForDB(eventOutcomeDetailNote) + "', " + agent + " )" )
 
 def insertIntoDerivations(sourceFileUUID="", derivedFileUUID="", relatedEventUUID=""):
     databaseInterface.runSQL("""INSERT INTO Derivations
@@ -136,12 +154,13 @@ def logTaskCompletedSQL(task):
 def logJobCreatedSQL(job):
     separator = databaseInterface.getSeparator()
     unitUUID =  job.unit.UUID
+    decDate = databaseInterface.getDeciDate("." + job.createdDate.split(".")[-1])
     if job.unit.owningUnit != None:
         unitUUID = job.unit.owningUnit.UUID 
     databaseInterface.runSQL("""INSERT INTO Jobs (jobUUID, jobType, directory, SIPUUID, currentStep, unitType, microserviceGroup, createdTime, createdTimeDec, MicroServiceChainLinksPK, subJobOf)
         VALUES ( '""" + job.UUID.__str__() + separator + escapeForDB(job.description) + separator \
         + escapeForDB(job.unit.currentPath) + separator + escapeForDB(unitUUID) + \
-        separator + "Executing command(s)" + separator + job.unit.__class__.__name__  + separator + job.microserviceGroup.__str__() + separator + job.createdDate + separator + databaseInterface.getDeciDate("." + job.createdDate.split(".")[-1]) + separator + job.pk.__str__()  + separator + job.subJobOf.__str__() + "' )" )
+        separator + "Executing command(s)" + separator + job.unit.__class__.__name__  + separator + job.microserviceGroup.__str__() + separator + job.createdDate + separator + decDate + separator + job.pk.__str__()  + separator + job.subJobOf.__str__() + "' )" )
     #TODO -un hardcode executing exeCommand
 
 

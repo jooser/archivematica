@@ -18,9 +18,9 @@
 from django import forms
 from django.forms import ModelForm
 from django.forms.models import modelformset_factory
-from django.forms.widgets import TextInput, Textarea, CheckboxInput, HiddenInput
+from django.forms.widgets import TextInput, Textarea
 from main import models
-import settings
+from django.conf import settings
 
 class AdministrationForm(forms.Form):
     arguments = forms.CharField(required=False, widget=Textarea(attrs=settings.TEXTAREA_ATTRS))

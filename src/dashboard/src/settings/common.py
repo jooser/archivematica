@@ -19,11 +19,13 @@ import os
 import sys
 sys.path.append("/usr/lib/archivematica/archivematicaCommon/externals")
 
-BASE_PATH = os.path.dirname(__file__)
+path_of_this_file = os.path.abspath(os.path.dirname(__file__))
+
+BASE_PATH = os.path.abspath(os.path.join(path_of_this_file, os.pardir))
 
 # Django settings for app project.
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -138,6 +140,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'middleware.common.AJAXSimpleExceptionResponseMiddleware',
     'installer.middleware.ConfigurationCheckMiddleware',
+    'middleware.common.SpecificExceptionErrorPageResponseMiddleware'
 )
 
 ROOT_URLCONF = 'urls'
@@ -166,7 +169,7 @@ INSTALLED_APPS = (
     'installer',
     'components.accounts',
     'main',
-    'mcp',
+    'components.mcp',
 
     # For REST API
     'tastypie',
@@ -195,8 +198,10 @@ LOGGING = {
     }
 }
 
+# login-related settings
 LOGIN_REDIRECT_URL = '/'
-LOGIN_URL = '/administration/accounts/login'
+LOGIN_URL          = '/administration/accounts/login'
+LOGIN_EXEMPT_URLS  = [r'^api']
 
 # Django debug toolbar
 try:
@@ -236,11 +241,3 @@ TEXTAREA_ATTRS           = {'rows': '4', 'class': 'span11'}
 TEXTAREA_WITH_HELP_ATTRS = {'rows': '4', 'class': 'span11 has_contextual_help'}
 INPUT_ATTRS              = {'class': 'span11'}
 INPUT_WITH_HELP_ATTRS    = {'class': 'span11 has_contextual_help'}
-
-try:
-    LOCAL_SETTINGS
-except NameError:
-    try:
-        from settings_local import *
-    except ImportError:
-        pass

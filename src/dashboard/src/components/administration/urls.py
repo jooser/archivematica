@@ -16,7 +16,7 @@
 # along with Archivematica.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.conf.urls.defaults import patterns
-import settings
+from django.conf import settings
 
 urlpatterns = patterns('components.administration.views',
     (r'^$', 'administration'),
@@ -32,5 +32,6 @@ urlpatterns = patterns('components.administration.views',
     (r'processing/$', 'administration_processing'),
     (r'sources/json/$', 'administration_sources_json'),
     (r'storage/json/$', 'administration_storage_json'),
-    (r'premis/agent/$', 'administration_premis_agent')
+    (r'premis/agent/$', 'administration_premis_agent'),
+    (r'api/$', 'administration_api')
 )

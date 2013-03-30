@@ -18,6 +18,7 @@
 from django.utils.dateformat import format
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from main import models
+import cPickle
 
 # Used for raw SQL queries to return data in dictionaries instead of lists
 def dictfetchall(cursor):
@@ -60,7 +61,7 @@ def task_duration_in_seconds(task):
     return duration
 
 def get_jobs_by_sipuuid(uuid):
-    jobs = models.Job.objects.filter(sipuuid=uuid).order_by('-createdtime', 'subjobof')
+    jobs = models.Job.objects.filter(sipuuid=uuid,subjobof='').order_by('-createdtime', 'subjobof')
     priorities = {
         'completedUnsuccessfully': 0,
         'requiresAprroval': 1,
@@ -78,3 +79,50 @@ def get_jobs_by_sipuuid(uuid):
 def get_metadata_type_id_by_description(description):
     types = models.MetadataAppliesToType.objects.filter(description=description)
     return types[0].id
+
+def transfer_type_directories():
+    return {
+      'standard':     'standardTransfer',
+      'unzipped bag': 'baggitDirectory',
+      'zipped bag':   'baggitZippedDirectory',
+      'dspace':       'Dspace',
+      'maildir':      'maildir',
+      'TRIM':         'TRIM'
+    }
+
+def transfer_directory_by_type(type):
+    type_paths = {
+      'standard':     'standardTransfer',
+      'unzipped bag': 'baggitDirectory',
+      'zipped bag':   'baggitZippedDirectory',
+      'dspace':       'Dspace',
+      'maildir':      'maildir',
+      'TRIM':         'TRIM'
+    }
+
+    return transfer_type_directories()[type]
+
+def transfer_type_by_directory(directory):
+    type_directories = transfer_type_directories()
+
+    # flip keys and values in dictionary
+    directory_types = dict((value, key) for key, value in type_directories.iteritems())
+
+    return directory_types[directory]
+
+def get_setting(setting, default=''):
+    try:
+        setting = models.DashboardSetting.objects.get(name=setting)
+        return setting.value
+    except:
+        return default
+
+def set_setting(setting, value=''):
+    try:
+        setting_data = models.DashboardSetting.objects.get(name=setting)
+    except:
+        setting_data = models.DashboardSetting.objects.create()
+        setting_data.name = setting
+
+    setting_data.value = value
+    setting_data.save()
