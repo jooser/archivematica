@@ -39,10 +39,10 @@ import components.decorators as decorators
 import components.helpers as helpers
 import logging
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-logger.addHandler(logging.FileHandler('django_debug.log', mode='a'))
+logger.addHandler(logging.FileHandler('/tmp/django_debug.log', mode='a'))
 
 """ @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
       Administration
@@ -83,23 +83,26 @@ def administration_atk_dips(request):
     if request.POST:        
         form = ArchivistsToolkitConfigForm(request.POST, instance=atk)
         if form.is_valid():
-            logger.debug("saving form")
-            new_atk = form.save()
-            new_atk.save()
-            logger.debug("new_atk {}", new_atk.dbname)
+            newatk = form.save()
+            logger.debug('trying to show name ' + newatk.dbname)
             #save this new form data into MicroServiceChoiceReplacementDic
-            new_mscrDic = models.MicroServiceChoiceReplacementDic.objects.get(id='5395d1ea-a892-4029-b5a8-5264a17bbade')
             new_settings_string = '{{"%host%":"{}", "%port%":"{}", "%dbname%":"{}", "%dbuser%":"{}", "%dbpass%":"{}", \
                                    "%atuser%":"{}", "%restrictions%":"{}", "%object_type%":"{}", "%ead_actuate%":"{}", \
                                    "%ead_show%":"{}", "%use_statement%":"{}", "%uri_prefix%":"{}", "%access_conditions%":"{}", \
-                                   "%use_conditions%":"{}}}'.format(new_atk.host, new_atk.port, new_atk.dbname, new_atk.dbuser,
-                                                                    new_atk.dbpass,new_atk.atuser,new_atk.premis, new_atk.object_type, 
-                                                                    new_atk.ead_actuate, new_atk.ead_show,new_atk.use_statement, 
-                                                                    new_atk.uri_prefix, new_atk.access_conditions, new_atk.use_conditions)
-            logger.debug('new settings {}', new_settings_string)                       
-            new_mscrDic.replacementDic = new_settings_string
-            new_mscrDic.save()                      
-	    valid_submission = True
+                                   "%use_conditions%":"{}}}'.format(newatk.host, newatk.port, newatk.dbname, newatk.dbuser,
+                                                                    newatk.dbpass,newatk.atuser,newatk.premis, newatk.object_type, 
+                                                                    newatk.ead_actuate, newatk.ead_show,newatk.use_statement, 
+                                                                    newatk.uri_prefix, newatk.access_conditions, newatk.use_conditions)
+            logger.debug('new settings '+ new_settings_string)                       
+            new_mscrDic = models.MicroServiceChoiceReplacementDic.objects.get(description='Archivists Toolkit Config')
+            logger.debug('trying to save mscr ' + new_mscrDic.description)
+            newatk.save()
+            logger.debug('old: ' + new_mscrDic.replacementdic)
+            new_mscrDic.replacementdic = new_settings_string
+            logger.debug('new: ' + new_mscrDic.replacementdic)
+            new_mscrDic.save() 
+            logger.debug('done')
+            valid_submission = True
     else:
         form = ArchivistsToolkitConfigForm(instance=atk)
     return render(request, 'administration/dips_atk_edit.html', locals())
