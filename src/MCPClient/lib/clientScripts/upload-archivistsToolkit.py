@@ -127,7 +127,7 @@ def upload_to_atk(mylist, atuser, ead_actuate, ead_show, object_type, use_statem
         #aipUUID = aip[5:41]
         try:
             container1 = file_name[44:47]
-            container2 = file_name[48:51]
+            container2 = file_name[48:53]
         except:
             logger.error('file name does not have container ids in it')
             sys.exit(25)
