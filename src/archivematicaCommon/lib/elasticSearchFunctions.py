@@ -253,12 +253,34 @@ def index_transfer_files(conn, uuid, pathToTransfer, index, type):
     if len(rows) > 0:
         accession_id = rows[0][0]
 
+    # get file UUID information
+    fileUUIDs = {}
+    sql = "SELECT currentLocation, fileUUID FROM Files WHERE transferUUID='" + uuid + "'"
+
+    rows = databaseInterface.queryAllSQL(sql)
+    for row in rows:
+        file_path = row[0]
+        fileUUIDs[file_path] = row[1]
+
+    print 'P:' + pathToTransfer
+    print fileUUIDs
+
     for filepath in list_files_in_dir(pathToTransfer):
         if os.path.isfile(filepath):
+
+            relative_path = '%transferDirectory%objects' + filepath.replace(pathToTransfer, '')
+
+            sql = "SELECT fileUUID FROM Files WHERE currentLocation='" + relative_path + "' AND transferUUID='" + uuid + "'"
+            rows = databaseInterface.queryAllSQL(sql)
+            if len(rows) > 0:
+                file_uuid = rows[0][0]
+            else:
+                file_uuid = ''
 
             indexData = {
               'filepath'     : filepath,
               'filename'     : os.path.basename(filepath),
+              'fileuuid'     : file_uuid,
               'sipuuid'      : uuid,
               'accessionid'  : accession_id,
               'ingestdate'   : ingest_date,
