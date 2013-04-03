@@ -43,7 +43,7 @@
       <div class='aip-search-item'>
 
         <div class='aip-search-item-file-column'>
-          <div>{{ item.filename }}</div>
+          <div><a href="{% url components.ingest.views.transfer_file_download item.fileuuid %}">{{ item.filename }}</a></div>
         </div>
 
         <div class='aip-search-item-aip-column'>
