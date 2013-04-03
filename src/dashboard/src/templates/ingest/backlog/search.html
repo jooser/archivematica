@@ -47,7 +47,11 @@
         </div>
 
         <div class='aip-search-item-aip-column'>
-          <div>{{item.sipuuid}}</div>
+          <div>{{item.sipuuid}}
+          {% if item.accessionid != '' %}
+            (Accession {{ item.accessionid }})
+          {% endif %}
+          </div>
           {% if item.awaiting_creation %}
               <a href='/ingest/backlog/process/{{ item.sipuuid }}/' target='_blank' class='creation btn'>Create</a>
           {% endif %}

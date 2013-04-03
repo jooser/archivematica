@@ -239,6 +239,21 @@ def index_transfer_files(conn, uuid, pathToTransfer, index, type):
     ingest_date  = str(datetime.datetime.today())[0:10]
     create_time  = time.time()
 
+    # extract transfer name from path
+    path_without_uuid = pathToTransfer[:-45]
+    last_slash_position = path_without_uuid.rfind('/')
+    transfer_name = path_without_uuid[last_slash_position + 1:]
+
+    # get accessionId from SIPs table using transfer name
+    accession_id = ''
+    current_path = '%sharedPath%watchedDirectories/system/autoProcessSIP/' + transfer_name + '/'
+    sql = "SELECT accessionId from SIPs WHERE currentPath = '" + current_path + "'"
+    print sql
+
+    rows = databaseInterface.queryAllSQL(sql)
+    if len(rows) > 0:
+        accession_id = rows[0][0]
+
     for filepath in list_files_in_dir(pathToTransfer):
         if os.path.isfile(filepath):
 
@@ -246,6 +261,7 @@ def index_transfer_files(conn, uuid, pathToTransfer, index, type):
               'filepath'     : filepath,
               'filename'     : os.path.basename(filepath),
               'sipuuid'      : uuid,
+              'accessionid'  : accession_id,
               'ingestdate'   : ingest_date,
               'created'      : create_time
             }

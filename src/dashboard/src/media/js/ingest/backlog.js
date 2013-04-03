@@ -55,6 +55,7 @@ $(document).ready(function() {
     ''             : 'Any',
     'filename'     : 'File name',
     'fileExtension': 'File extension',
+    'accessionid'  : 'Accession number',
     'ingestdate'   : 'Ingest date (YYYY-MM-DD)',
     'sipuuid'      : 'SIP UUID'
   });
