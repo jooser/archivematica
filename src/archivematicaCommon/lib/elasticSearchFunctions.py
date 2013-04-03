@@ -248,7 +248,6 @@ def index_transfer_files(conn, uuid, pathToTransfer, index, type):
     accession_id = ''
     current_path = '%sharedPath%watchedDirectories/system/autoProcessSIP/' + transfer_name + '/'
     sql = "SELECT accessionId from SIPs WHERE currentPath = '" + current_path + "'"
-    print sql
 
     rows = databaseInterface.queryAllSQL(sql)
     if len(rows) > 0:
