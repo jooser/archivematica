@@ -31,7 +31,7 @@ from lxml import etree
 from components.ingest.forms import DublinCoreMetadataForm
 from components.ingest.views_NormalizationReport import getNormalizationReportQuery
 from components import helpers
-import calendar
+import calendar, ConfigParser
 import cPickle
 import components.decorators as decorators
 from components import helpers
@@ -42,6 +42,7 @@ import elasticSearchFunctions
 sys.path.append("/usr/lib/archivematica/archivematicaCommon/externals")
 import pyes
 from components.archival_storage.forms import StorageSearchForm
+from components.filesystem_ajax.views import send_file
 
 """ @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
       Ingest
@@ -374,3 +375,27 @@ def process_transfer(request, uuid):
         simplejson.JSONEncoder(encoding='utf-8').encode(response),
         mimetype='application/json'
     )
+
+def transfer_file_download(request, uuid):
+    # get file basename
+    try:
+        file = models.File.objects.get(uuid=uuid)
+    except:
+        raise Http404
+
+    file_basename = os.path.basename(file.currentlocation)
+
+    # replace this with a helper function
+    clientConfigFilePath = '/etc/archivematica/MCPServer/serverConfig.conf'
+    config = ConfigParser.SafeConfigParser()
+    config.read(clientConfigFilePath)
+
+    try:
+        shared_directory_path = config.get('MCPServer', 'sharedDirectory')
+    except:
+        shared_directory_path = ''
+
+    transfer = models.Transfer.objects.get(uuid=file.transfer.uuid)
+    path_to_transfer = transfer.currentlocation.replace('%sharedPath%', shared_directory_path)
+    path_to_file = file.currentlocation.replace('%transferDirectory%', path_to_transfer)
+    return send_file(request, path_to_file)

@@ -35,5 +35,6 @@ urlpatterns = patterns('components.ingest.views',
     (r'preview/aip/(?P<jobuuid>' + settings.UUID_REGEX + ')/$', 'ingest_browse_aip'),
     (r'preview/normalization/(?P<jobuuid>' + settings.UUID_REGEX + ')/$', 'ingest_browse_normalization'),
     (r'backlog/process/(?P<uuid>' + settings.UUID_REGEX + ')/', 'process_transfer'),
+    (r'backlog/file/download/(?P<uuid>' + settings.UUID_REGEX + ')/', 'transfer_file_download'),
     (r'backlog/$', 'transfer_backlog')
 )
