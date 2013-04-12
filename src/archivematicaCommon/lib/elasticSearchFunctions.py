@@ -55,6 +55,7 @@ def connect_and_create_index(index, attempt=1):
         conn = pyes.ES(getElasticsearchServerHostAndPort())
         try:
             conn.create_index(index)
+            set_up_mapping(conn, index)
             conn = connect_and_create_index(index, attempt + 1)
         except:
             # above exception was pyes.exceptions.IndexAlreadyExistsException
@@ -64,6 +65,39 @@ def connect_and_create_index(index, attempt=1):
         conn = False
 
     return conn
+
+def set_up_mapping(conn, index):
+    machine_readable_field_spec = {
+        'type':  'string',
+        'index': 'not_analyzed'
+    }
+
+    if index == 'transfers':
+        mapping = {
+            'filepath'     : {'type': 'string'},
+            'filename'     : {'type': 'string'},
+            'fileuuid'     : machine_readable_field_spec,
+            'sipuuid'      : machine_readable_field_spec,
+            'accessionid'  : machine_readable_field_spec,
+            'status'       : machine_readable_field_spec,
+            'origin'       : machine_readable_field_spec,
+            'ingestdate'   : {'type': 'date' , 'format': 'dateOptionalTime'},
+            'created'      : {'type': 'double'}
+        }
+
+        print 'Creating transfer file mapping...'
+        conn.put_mapping(doc_type='transferfile', mapping={'transferfile': {'properties': mapping}}, indices=['transfers'])
+        print 'Transfer mapping created.'
+
+    if index == 'aips':
+        mapping = {
+            'AIPUUID': machine_readable_field_spec,
+            'FILEUUID': machine_readable_field_spec
+        }
+
+        print 'Creating AIP file mapping...'
+        conn.put_mapping(doc_type='aipfile', mapping={'aipfile': {'properties': mapping}}, indices=['aips'])
+        print 'AIP file mapping created.'
 
 def connect_and_index_aip(uuid, name, filePath):
     conn = connect_and_create_index('aips')

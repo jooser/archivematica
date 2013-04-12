@@ -31,7 +31,7 @@ from lxml import etree
 from components.ingest.forms import DublinCoreMetadataForm
 from components.ingest.views_NormalizationReport import getNormalizationReportQuery
 from components import helpers
-import calendar, ConfigParser, socket
+import calendar, ConfigParser, socket, uuid
 import cPickle
 import components.decorators as decorators
 from components import helpers
@@ -241,8 +241,7 @@ def ingest_upload(request, uuid):
             except:
                 access = models.Access(sipuuid=uuid)
             access.target = cPickle.dumps({
-              "target": request.POST['target'],
-              "intermediate": request.POST['intermediate'] == "true" })
+              "target": request.POST['target'] })
             access.save()
             response = simplejson.JSONEncoder().encode({ 'ready': True })
             return HttpResponse(response, mimetype='application/json')
@@ -300,8 +299,17 @@ def ingest_browse_aip(request, jobuuid):
     return render(request, 'ingest/aip_browse.html', locals())
 
 def transfer_backlog(request):
+    # deal with transfer mode
+    file_mode = False
+    checked_if_in_file_mode = ''
+    if request.GET.get('mode', '') != '':
+        file_mode = True
+        checked_if_in_file_mode = 'checked'
+
+    # get search parameters from request
     queries, ops, fields, types = advanced_search.search_parameter_prep(request)
- 
+
+    # redirect if no search params have been set 
     if not 'query' in request.GET:
         return helpers.redirect_with_get_params(
             'components.ingest.views.transfer_backlog',
@@ -310,16 +318,21 @@ def transfer_backlog(request):
             type=''
         )
 
-    # set pagination-related variables to use in template
+    # get string of URL parameters that should be passed along when paging
     search_params = advanced_search.extract_url_search_params_from_request(request)
 
-    items_per_page = 20
+    # set paging variables
+    if not file_mode:
+        items_per_page = 10
+    else:
+        items_per_page = 20
 
     page = advanced_search.extract_page_number_from_url(request)
 
     start = page * items_per_page + 1
 
-    conn = pyes.ES(elasticSearchFunctions.getElasticsearchServerHostAndPort())
+    # perform search
+    conn = elasticSearchFunctions.connect_and_create_index('transfers')
 
     try:
         query = advanced_search.assemble_query(
@@ -330,20 +343,52 @@ def transfer_backlog(request):
             must_haves=[pyes.TermQuery('status', 'backlog')]
         )
 
-        results = conn.search_raw(
-            query,
-            indices='transfers',
-            type='transferfile',
-            start=start - 1,
-            size=items_per_page
-        )
+        # use all results to pull transfer facets if not in file mode
+        if not file_mode:
+            results = conn.search_raw(
+                query,
+                indices='transfers',
+                type='transferfile',
+            )
+        else:
+        # otherwise use pages results
+            results = conn.search_raw(
+                query,
+                indices='transfers',
+                type='transferfile',
+                start=start - 1,
+                size=items_per_page
+            )
     except:
         return HttpResponse('Error accessing index.')
 
+    # take note of facet data
     file_extension_usage = results['facets']['fileExtension']['terms']
-    number_of_results = results.hits.total
-    results = transfer_backlog_augment_search_results(results)
+    transfer_uuids       = results['facets']['sipuuid']['terms']
 
+    if not file_mode:
+        # run through transfers to see if they've been created yet
+        awaiting_creation = {}
+        for transfer_instance in transfer_uuids:
+            try:
+                awaiting_creation[transfer_instance.term] = transfer_awaiting_sip_creation_v2(transfer_instance.term)
+                transfer = models.Transfer.objects.get(uuid=transfer_instance.term)
+                transfer_basename = os.path.basename(transfer.currentlocation[:-1])
+                transfer_instance.name = transfer_basename[:-37]
+                transfer_instance.type = transfer.type
+            except:
+                awaiting_creation[transfer_instance.term] = False
+
+        # page data
+        number_of_results = len(transfer_uuids)
+        page_data = helpers.pager(transfer_uuids, items_per_page, page + 1)
+        transfer_uuids = page_data['objects']
+    else:
+        # page data
+        number_of_results = results.hits.total
+        results = transfer_backlog_augment_search_results(results)
+
+    # set remaining paging variables
     end, previous_page, next_page = advanced_search.paging_related_values_for_template_use(
        items_per_page,
        page,
@@ -376,6 +421,10 @@ def transfer_backlog_augment_search_results(raw_results):
 
     return modifiedResults
 
+def transfer_awaiting_sip_creation_v2(uuid):
+    transfer = models.Transfer.objects.get(uuid=uuid)
+    return transfer.currentlocation.find('%sharedPath%transferBacklog/original/') == 0
+
 def transfer_awaiting_sip_creation(uuid):
     try:
         job = models.Job.objects.filter(
@@ -387,26 +436,65 @@ def transfer_awaiting_sip_creation(uuid):
     except:
         return False
 
-def process_transfer(request, uuid):
+def process_transfer(request, transfer_uuid):
     response = {}
 
     if request.user.id:
-        client = MCPClient()
-        try:
-            job = models.Job.objects.filter(
-                sipuuid=uuid,
-                microservicegroup='Create SIP from Transfer',
-                currentstep='Awaiting decision'
-            )[0]
-            chain = models.MicroServiceChain.objects.get(
-                description='Create single SIP and continue processing'
-            )
-            result = client.execute(job.pk, chain.pk, request.user.id)
+        # get transfer info
+        transfer = models.Transfer.objects.get(uuid=transfer_uuid)
+        transfer_path = transfer.currentlocation.replace(
+            '%sharedPath%',
+            helpers.get_server_config_value('sharedDirectory')
+        )
 
-            response['message'] = 'SIP created.'
-        except:
-            response['error']   = True
-            response['message'] = 'Error attempting to create SIP.'
+        import MySQLdb
+        import databaseInterface
+        import databaseFunctions
+
+        # new
+        transfer_directory_name = os.path.basename(transfer_path[:-1])
+        transfer_name = transfer_directory_name[:-37]
+
+        sip_uuid = uuid.uuid4().__str__()
+        sip = models.SIP.objects.create(
+            uuid=sip_uuid,
+            currentpath='%sharedPath%watchedDirectories/system/autoProcessSIP/' + transfer_name + '/'
+        )
+        sip.save()
+
+        from archivematicaCreateStructuredDirectory import createStructuredDirectory
+        from archivematicaCreateStructuredDirectory import createManualNormalizedDirectoriesList
+        createStructuredDirectory(transfer_path, createManualNormalizedDirectories=False)
+
+        for directory in createManualNormalizedDirectoriesList:
+            path = os.path.join(transfer_path, directory)
+            if not os.path.isdir(path):
+                os.makedirs(path)
+
+        # move transfer
+
+        #get the database list of files in the objects directory
+        #for each file, confirm it's in the SIP objects directory, and update the current location/ owning SIP'
+        sql = """SELECT  fileUUID, currentLocation FROM Files WHERE removedTime = 0 AND currentLocation LIKE '\%transferDirectory\%objects%' AND transferUUID =  '""" + transfer_uuid + "'"
+        for row in databaseInterface.queryAllSQL(sql):
+            fileUUID = row[0]
+            currentPath = databaseFunctions.deUnicode(row[1])
+            currentSIPFilePath = currentPath.replace("%transferDirectory%", transfer_path)
+            if os.path.isfile(currentSIPFilePath):
+                sql = """UPDATE Files SET currentLocation='%s', sipUUID='%s' WHERE fileUUID='%s'""" % (MySQLdb.escape_string(currentPath.replace("%transferDirectory%", "%SIPDirectory%")), sip_uuid, fileUUID)
+                databaseInterface.runSQL(sql)
+            else:
+                print >>sys.stderr, "file not found: ", currentSIPFilePath
+
+        import shutil
+        shutil.move(
+            transfer_path,
+            '/var/archivematica/sharedDirectory/watchedDirectories/system/autoProcessSIP/' + transfer_name
+        )
+
+        elasticSearchFunctions.connect_and_change_transfer_file_status(transfer_uuid, '')
+
+        response['message'] = 'SIP created.'
     else:
         response['error']   = True
         response['message'] = 'Must be logged in.'
