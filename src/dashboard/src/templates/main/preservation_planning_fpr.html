@@ -167,6 +167,33 @@
 
 {% include 'main/fpr_nav.html' %}
 
+{% include 'preservation_planning/fpr.js' %}
+
+<script type="application/javascript">
+	function processForm(e) {
+    if (e.preventDefault) e.preventDefault();
+
+    moreStuff();
+    return false;
+}
+
+var form = document.getElementById('updateFPR');
+if (form.attachEvent) {
+    form.attachEvent("submit", processForm);
+} else {
+    form.addEventListener("submit", processForm);
+}
+
+	
+</script> 
+      <div id="fpr" class="well">
+          <p></p>
+      </div>
+      
+<form name="updateFPR" method="GET" action = {% installer.views.fprdownload %} >
+	<input type="submit">Check for FPR Updates</input>
+</form>
+ 
 <table style="width:100%;table-layout:auto;word-wrap:break-word" class="FileIDsTable">
 
 <thead style="color:black;">
