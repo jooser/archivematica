@@ -24,40 +24,46 @@
 
 def getNormalizationReportQuery():
     return """
-select
-    CONCAT(f.fileUUID,' ', fid.pk) AS fileName, f.fileUUID, f.currentLocation , fid.description, fid.validAccessFormat AS 'already_in_access_format', fid.validPreservationFormat AS 'already_in_preservation_format',
-    max(if(cc.classification = 'access', t.taskUUID, null)) IS NOT NULL as access_normalization_attempted,
-    max(if(cc.classification = 'preservation', t.taskUUID, null)) IS NOT NULL as preservation_normalization_attempted,
-    max(if(cc.classification = 'access', t.taskUUID, null)) as access_normalization_task_uuid,
-    max(if(cc.classification = 'preservation', t.taskUUID, null)) as preservation_normalization_task_uuid,
-    max(if(cc.classification = 'access', t.exitCode, null)) != 0 AS access_normalization_failed,
-    max(if(cc.classification = 'preservation', t.exitCode, null)) != 0 AS preservation_normalization_failed,
-    max(if(cc.classification = 'access', t.exitCode, null)) as access_task_exitCode,
-    max(if(cc.classification = 'preservation', t.exitCode, null)) as preservation_task_exitCode
-from
-    Files f
-    Join
-    FilesIdentifiedIDs fii on f.fileUUID = fii.fileUUID
-    Join
-    FileIDs fid on fii.fileID = fid.pk 
-    Join
-    CommandRelationships cr on cr.fileID = fid.pk
-    Join
-    CommandClassifications cc on cr.commandClassification  = cc.pk
-    join
-    TasksConfigs tc on tc.taskTypePKReference = cr.pk
-    join
-    MicroServiceChainLinks ml on tc.pk = ml.currentTask
-    join
-    Jobs j on j.MicroServiceChainLinksPK = ml.pk and j.sipUUID = f.sipUUID
-    join
-    Tasks t on t.jobUUID = j.jobUUID
-where
-    f.sipUUId = %s and f.fileGrpUse in ('original', 'service')
-    and cc.classification in ('preservation', 'access')
-    AND ml.pk NOT IN (SELECT MicroserviceChainLink FROM DefaultCommandsForClassifications)
-group by
-    fid.pk;"""
+    SELECT CONCAT(Files.currentLocation, Files.fileUUID,' ', IFNULL(q_1.description, '')) AS 'fileName', q_1.*
+    FROM
+        Files
+    LEFT OUTER JOIN
+        (select
+            f.fileUUID, f.currentLocation , fid.description, fid.validAccessFormat AS 'already_in_access_format', fid.validPreservationFormat AS 'already_in_preservation_format',
+            max(if(cc.classification = 'access', t.taskUUID, null)) IS NOT NULL as access_normalization_attempted,
+            max(if(cc.classification = 'preservation', t.taskUUID, null)) IS NOT NULL as preservation_normalization_attempted,
+            max(if(cc.classification = 'access', t.taskUUID, null)) as access_normalization_task_uuid,
+            max(if(cc.classification = 'preservation', t.taskUUID, null)) as preservation_normalization_task_uuid,
+            max(if(cc.classification = 'access', t.exitCode, null)) != 0 AS access_normalization_failed,
+            max(if(cc.classification = 'preservation', t.exitCode, null)) != 0 AS preservation_normalization_failed,
+            max(if(cc.classification = 'access', t.exitCode, null)) as access_task_exitCode,
+            max(if(cc.classification = 'preservation', t.exitCode, null)) as preservation_task_exitCode
+        from
+            Files f
+            Join
+            FilesIdentifiedIDs fii on f.fileUUID = fii.fileUUID
+            Join
+            FileIDs fid on fii.fileID = fid.pk 
+            Join
+            CommandRelationships cr on cr.fileID = fid.pk
+            Join
+            CommandClassifications cc on cr.commandClassification  = cc.pk
+            join
+            TasksConfigs tc on tc.taskTypePKReference = cr.pk
+            join
+            MicroServiceChainLinks ml on tc.pk = ml.currentTask
+            join
+            Jobs j on j.MicroServiceChainLinksPK = ml.pk and j.sipUUID = f.sipUUID
+            join
+            Tasks t on t.jobUUID = j.jobUUID
+        where
+            f.sipUUId = %s and f.fileGrpUse in ('original', 'service')
+            and cc.classification in ('preservation', 'access')
+            AND ml.pk NOT IN (SELECT MicroserviceChainLink FROM DefaultCommandsForClassifications)
+        group by
+            fid.pk) AS q_1
+    ON Files.fileUUID = q_1.fileUUID
+    WHERE Files.sipUUId = %s"""
 
 #TODO and fid.fileIDType like '16ae%'
 #variableValue FROM UnitVariables WHERE unitType = 'SIP' AND variable = 'normalizationFileIdentificationToolIdentifierTypes' AND unitUUID = '';
@@ -69,7 +75,7 @@ if __name__ == '__main__':
     import databaseInterface
     print "testing normalization report"
     sql = getNormalizationReportQuery()
-    sql = sql % ( uuid)
+    sql = sql % (uuid, uuid)
     rows = databaseInterface.queryAllSQL(sql)
     for row in rows:
         print row
