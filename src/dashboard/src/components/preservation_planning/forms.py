@@ -105,6 +105,7 @@ class FPRSearchForm(forms.Form):
       
 class FPREditFormatID(ModelForm):
     uuid = forms.HiddenInput()
+    lastModified = forms.HiddenInput()
     tool = forms.ChoiceField(choices = getTools(), label= "File Identification Tool")
     description = forms.CharField(label = 'Format ID Description', required = False, max_length = 100,
         widget = TextInput(attrs = {'class':'Description'}))
@@ -112,13 +113,13 @@ class FPREditFormatID(ModelForm):
     validaccessformat = forms.BooleanField(required=False, initial=False, label='Valid for Access') 
     replaces = forms.ChoiceField(choices = getFormatIDs())
     enabled = forms.BooleanField(required=False, initial=True) 
-    exclude = ('lastModified')
     class Meta:
         model = ppModels.FormatID
 
 class FPREditCommand(ModelForm):
     COMMAND_USAGE_CHOICES = (('command','command'), ('verification','verification'), ('eventDetail','eventDetail'))
     uuid = forms.HiddenInput()
+    lastModified = forms.HiddenInput()
     commandUsage = forms.ChoiceField(choices = COMMAND_USAGE_CHOICES, label='Usage')
     commandType = forms.ChoiceField(choices = getCommandTypes())
     command = forms.CharField(label = 'Command', required = False, max_length = 100,
@@ -131,30 +132,30 @@ class FPREditCommand(ModelForm):
         widget = TextInput(attrs = {'class':'Description'}))
     verificationCommand = forms.ChoiceField(choices = getCommands('verification'), label = 'Verification command', required = False)
     eventDetailCommand = forms.ChoiceField(choices = getCommands('eventDetail'), label = 'Event detail command', required = False)
-    exclude = ('lastModified', 'supportedBy')
+    exclude = ('supportedBy')
     class Meta:
         model = ppModels.Command
         
 class FPREditRule(ModelForm):
     uuid = forms.HiddenInput()
+    lastModified = forms.HiddenInput()
     purpose = forms.ChoiceField(choices = getPurposes())
     formatID = forms.ChoiceField(choices = getFormatIDs(), label = 'Format ID', required = True)
     command = forms.ChoiceField(choices = getCommands(), label = 'Command', required = True)
     replaces = forms.CharField(max_length=50)
     enabled = forms.BooleanField(required=False, initial=True)
-    exclude = ('lastModified')
     class Meta:
         model = ppModels.FormatPolicyRule  
         
 class FPREditToolOutput(ModelForm):
     uuid = forms.HiddenInput()
+    lastModified = forms.HiddenInput()
     formatID = forms.ChoiceField(choices = getFormatIDs(), label='Format ID', required = True)
     toolOutput = forms.CharField(label = 'Tool output', required=True, max_length=50)
     tool = forms.ChoiceField(choices = getTools())
     toolVersion = forms.CharField(max_length=20, label='Tool version')
     replaces = forms.CharField(max_length=50)
     enabled = forms.BooleanField(required=False, initial=True)
-    exclude = ('lastModified')
     class Meta:
         model = ppModels.FormatIDToolOutput
       
