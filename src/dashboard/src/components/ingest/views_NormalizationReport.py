@@ -24,12 +24,12 @@
 
 def getNormalizationReportQuery():
     return """
-    SELECT CONCAT(Files.currentLocation, Files.fileUUID,' ', IFNULL(q_1.description, '')) AS 'fileName', q_1.*
+    SELECT CONCAT(Files.currentLocation, ' ', Files.fileUUID,' ', IFNULL(q_1.fileID, "")) AS 'pagingIndex', Files.currentLocation AS 'fileName', q_1.description , q_1.*
     FROM
         Files
     LEFT OUTER JOIN
         (select
-            f.fileUUID, f.currentLocation , fid.description, fid.validAccessFormat AS 'already_in_access_format', fid.validPreservationFormat AS 'already_in_preservation_format',
+            f.fileUUID, f.currentLocation , fid.pk AS 'fileID', fid.description, fid.validAccessFormat AS 'already_in_access_format', fid.validPreservationFormat AS 'already_in_preservation_format',
             max(if(cc.classification = 'access', t.taskUUID, null)) IS NOT NULL as access_normalization_attempted,
             max(if(cc.classification = 'preservation', t.taskUUID, null)) IS NOT NULL as preservation_normalization_attempted,
             max(if(cc.classification = 'access', t.taskUUID, null)) as access_normalization_task_uuid,
@@ -61,9 +61,10 @@ def getNormalizationReportQuery():
             and cc.classification in ('preservation', 'access')
             AND ml.pk NOT IN (SELECT MicroserviceChainLink FROM DefaultCommandsForClassifications)
         group by
-            fid.pk) AS q_1
+            fileUUID, fid.pk) AS q_1
     ON Files.fileUUID = q_1.fileUUID
-    WHERE Files.sipUUId = %s"""
+    WHERE Files.sipUUId = %s
+    AND fileGrpUse IN ('original', 'service') ;"""
 
 #TODO and fid.fileIDType like '16ae%'
 #variableValue FROM UnitVariables WHERE unitType = 'SIP' AND variable = 'normalizationFileIdentificationToolIdentifierTypes' AND unitUUID = '';
