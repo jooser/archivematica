@@ -190,8 +190,8 @@ if (form.attachEvent) {
           
       </div>
       
-<form name="updateFPR" method="GET" action ="{% url installer.views.fprdownload %}">
-	<input type="submit">Check for FPR Updates</input>
+<form name="updateFPR" method="POST">
+	<button class="btn primary" type="submit">Check for FPR Updates</button>
 </form>
  
 <table style="width:100%;table-layout:auto;word-wrap:break-word" class="FileIDsTable">
