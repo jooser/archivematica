@@ -8,7 +8,7 @@ class FormatID(models.Model):
     validaccessformat = models.BooleanField(null=True, db_column='validAccessFormat', default=0)
     tool = models.CharField(null=True, max_length=50, db_column='fileIDType')
     replaces = models.CharField(null=True, max_length=50, db_column='replaces')
-    lastmodified = models.DateTimeField(db_column='lastModified')
+    lastModified = models.DateTimeField(db_column='lastModified')
     enabled = models.BooleanField(db_column='enabled', default=1)
     class Meta:
         db_table = u'FileIDs'
@@ -20,8 +20,8 @@ class FormatIDToolOutput(models.Model):
     tool = models.CharField(max_length=150, db_column='tool')
     toolVersion = models.CharField(max_length=20, db_column='toolVersion')
     replaces = models.CharField(null=True, max_length=50, db_column='replaces')
-    lastmodified = models.DateTimeField(db_column='lastModified')
-    enabled = models.BooleanField(db_column='enabled')
+    lastModified = models.DateTimeField(db_column='lastModified')
+    enabled = models.BooleanField(db_column='enabled', default=1)
     class Meta:
         db_table = u'FileIDsBySingleID'
         
@@ -42,8 +42,8 @@ class Command(models.Model):
     outputFileFormat = models.TextField(db_column='outputFileFormat', null=True)
     #replaces = models.ForeignKey('self', related_name='+', db_column='replaces', null=True)
     replaces = models.CharField(max_length=36, null=True, db_column='replaces')
-    lastmodified = models.DateTimeField(db_column='lastModified', null=True)
-    enabled = models.IntegerField(null=True, db_column='enabled', default=1)
+    lastModified = models.DateTimeField(db_column='lastModified', null=True)
+    enabled = models.BooleanField(db_column='enabled', default=1)
     class Meta:
         db_table = u'Command'
         
@@ -58,7 +58,7 @@ class FormatPolicyRule(models.Model):
     formatID = models.CharField(max_length=36, null=True, db_column='fileID')
     replaces = models.CharField(max_length=36, null=True)
     lastModified = models.DateTimeField(db_column='lastModified')
-    enabled = models.IntegerField(null=True, db_column='enabled', default=1)
+    enabled = models.BooleanField(db_column='enabled', default=1)
     class Meta:
         db_table = u'CommandRelationship'
 
