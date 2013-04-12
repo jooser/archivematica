@@ -113,9 +113,9 @@ class FPREditFormatID(ModelForm):
     validaccessformat = forms.BooleanField(required=False, initial=False, label='Valid for Access') 
     replaces = forms.ChoiceField(choices = getFormatIDs())
     enabled = forms.BooleanField(required=False, initial=True) 
-    exclude = ('lastModified',)
     class Meta:
         model = ppModels.FormatID
+        exclude = ('lastModified',)
 
 class FPREditCommand(ModelForm):
     COMMAND_USAGE_CHOICES = (('command','command'), ('verification','verification'), ('eventDetail','eventDetail'))
@@ -133,9 +133,9 @@ class FPREditCommand(ModelForm):
         widget = TextInput(attrs = {'class':'Description'}))
     verificationCommand = forms.ChoiceField(choices = getCommands('verification'), label = 'Verification command', required = False)
     eventDetailCommand = forms.ChoiceField(choices = getCommands('eventDetail'), label = 'Event detail command', required = False)
-    exclude = ('supportedBy', 'lastModified',)
     class Meta:
         model = ppModels.Command
+        exclude = ('supportedBy', 'lastModified',)
         
 class FPREditRule(ModelForm):
     uuid = forms.HiddenInput()
@@ -145,10 +145,10 @@ class FPREditRule(ModelForm):
     command = forms.ChoiceField(choices = getCommands(), label = 'Command', required = True)
     replaces = forms.CharField(max_length=50)
     enabled = forms.BooleanField(required=False, initial=True)
-    exclude = ('lastModified',)
     class Meta:
         model = ppModels.FormatPolicyRule  
-        
+        exclude = ('lastModified',)
+            
 class FPREditToolOutput(ModelForm):
     uuid = forms.HiddenInput()
     lastModified = forms.HiddenInput()
@@ -158,7 +158,7 @@ class FPREditToolOutput(ModelForm):
     toolVersion = forms.CharField(max_length=20, label='Tool version')
     replaces = forms.CharField(max_length=50)
     enabled = forms.BooleanField(required=False, initial=True)
-    exclude = ('lastModified',)
     class Meta:
         model = ppModels.FormatIDToolOutput
+        exclude = ('lastModified',)
       
