@@ -113,6 +113,10 @@ class FPREditFormatID(ModelForm):
     validaccessformat = forms.BooleanField(required=False, initial=False, label='Valid for Access') 
     replaces = forms.ChoiceField(choices = getFormatIDs())
     enabled = forms.BooleanField(required=False, initial=True) 
+    toolOutput = forms.CharField(label = 'Tool output', required = True, max_length=100,
+        widget = TextInput(attrs = {'class':'Description'}))
+    toolVersion = forms.CharField(label = 'Tool version', required = True, max_length=100,
+        widget = TextInput(attrs = {'class':'Description'}))    
     class Meta:
         model = ppModels.FormatID
         exclude = ('lastModified',)
