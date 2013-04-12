@@ -187,10 +187,10 @@ if (form.attachEvent) {
 	
 </script> 
       <div id="fpr" class="well">
-          <p></p>
+          
       </div>
       
-<form name="updateFPR" method="GET" action = {% installer.views.fprdownload %} >
+<form name="updateFPR" method="GET" action ="{% url installer.views.fprdownload %}">
 	<input type="submit">Check for FPR Updates</input>
 </form>
  
