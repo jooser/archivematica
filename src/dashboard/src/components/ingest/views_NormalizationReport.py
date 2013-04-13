@@ -21,8 +21,13 @@
 # @package Archivematica
 # @subpackage Dashboard
 # @author Joseph Perry <joseph@artefactual.com>
+#import sys
+#sys.path.append("/usr/lib/archivematica/archivematicaCommon")
 
-def getNormalizationReportQuery():
+    
+def getNormalizationReportQuery(idsRestriction=""):
+    if idsRestriction:
+        idsRestriction = 'AND (%s)' % idsRestriction  
     return """
     SELECT CONCAT(Files.currentLocation, ' ', Files.fileUUID,' ', IFNULL(q_1.fileID, "")) AS 'pagingIndex', Files.currentLocation AS 'fileName', q_1.description , q_1.*
     FROM
@@ -56,24 +61,27 @@ def getNormalizationReportQuery():
             Jobs j on j.MicroServiceChainLinksPK = ml.pk and j.sipUUID = f.sipUUID
             join
             Tasks t on t.jobUUID = j.jobUUID
+            join
+            FileIDTypes on FileIDTypes.pk = fid.fileIDType 
         where
             f.sipUUId = %s and f.fileGrpUse in ('original', 'service')
             and cc.classification in ('preservation', 'access')
             AND ml.pk NOT IN (SELECT MicroserviceChainLink FROM DefaultCommandsForClassifications)
+            """ + idsRestriction + """
         group by
             fileUUID, fid.pk) AS q_1
     ON Files.fileUUID = q_1.fileUUID
     WHERE Files.sipUUId = %s
     AND fileGrpUse IN ('original', 'service') ;"""
 
-#TODO and fid.fileIDType like '16ae%'
-#variableValue FROM UnitVariables WHERE unitType = 'SIP' AND variable = 'normalizationFileIdentificationToolIdentifierTypes' AND unitUUID = '';
+
 
 if __name__ == '__main__':
     import sys
     uuid = "'%s'" % (sys.argv[1])
     sys.path.append("/usr/lib/archivematica/archivematicaCommon")
     import databaseInterface
+    #databaseInterface.printSQL = True
     print "testing normalization report"
     sql = getNormalizationReportQuery()
     sql = sql % (uuid, uuid)
